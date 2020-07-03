@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <meta http-equiv="x-ua-compatible" content="ie-edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pet Store</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body>
+    <div class="PetStore-header"></div>
+    <div class="PetStore-container">
+    </div>
+    <div class="PetStore-footer"></div>
+    <script src="./public/bundle.js" />
+  </body>
+</html>
