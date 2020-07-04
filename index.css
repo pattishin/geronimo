@@ -19,7 +19,18 @@ div.Geronimo-explorers table {
   width: inherit;
 }
 
-form.Geronimo-form {
+div.Geronimo-explorers-item {
+  margin: 10px auto;
+}
+
+div.Geronimo-form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+form.Geronimo-form1,
+form.Geronimo-form2 {
   display: flex;
   flex-direction: column;
   align-items: center;

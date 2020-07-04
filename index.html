@@ -14,7 +14,16 @@
   <body>
     <div class="Geronimo-container">
       <div class="Geronimo-form-wrapper">
-        <form class="Geronimo-form">
+        <form class="Geronimo-form1">
+          <div class="mdl-textfield mdl-js-textfield">
+            <textarea class="mdl-textfield__input" type="text" rows= "3" name="config"></textarea>
+            <label class="mdl-textfield__label" for="config">Configuration</label>
+          </div>
+          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Create Batch
+          </button>
+        </form>
+        <form class="Geronimo-form2">
           <!-- Title input -->
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input" type="text" name="title"></input>
@@ -44,13 +53,11 @@
           </div>
            <!-- Accent-colored raised button with ripple -->
           <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-            Submit
+            Create API Explorer
           </button>
         </form>
-        <div class="Geronimo-form-response"></div>
       </div>
-      <div class="Geronimo-explorers">
-      </div>
+      <div class="Geronimo-explorers"></div>
     </div>
     <div class="Geronimo-footer"></div>
     <script src="./public/bundle.js"></script>

@@ -1116,28 +1116,39 @@ const ExplorerComponent = require('./explorer.js');
 
 class Dashboard {
   constructor(title, url, method, body) {
-    this.createExplorer = this.createExplorer.bind(this);
+    this.createExplorers = this.createExplorers.bind(this);
   
-    this.form = document.querySelector('.Geronimo-form');
-    this.form.addEventListener("submit", this.createExplorer);
+    this.form1 = document.querySelector('.Geronimo-form1');
+    this.form2 = document.querySelector('.Geronimo-form2');
+    
+    this.form1.addEventListener("submit", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const formData = helpers.serialize(this.form1);
+      
+      this.createExplorers(JSON.parse(formData.config)); 
+    });
+
+    this.form2.addEventListener("submit", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const formData = helpers.serialize(this.form2);
+      
+      this.createExplorers([formData]); 
+    });
   }
 
-  createExplorer(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const formData = helpers.serialize(this.form);
-      const newExplorer = new ExplorerComponent(
-        formData.method,
-        formData.title,
-        formData.url,
-        formData.body
-      );
-  }
-
-  displayResponse(response) {
-    const responseWrapper = document.querySelector('.Geronimo-form-response'); 
-    responseWrapper.innerHTML = JSON.stringify(response);
+  createExplorers(configs) {
+    if(configs) {
+      configs.map(config => {
+        new ExplorerComponent(
+          config.method,
+          config.title,
+          config.url,
+          config.body
+        );
+      });
+    }
   }
 }
 
@@ -1160,12 +1171,14 @@ class ExplorerComponent {
   displayExplorer(formData) {
     const explorerList = document.querySelector('.Geronimo-explorers'); 
     const newExplorer = document.createElement('div');
+    newExplorer.setAttribute('class', 'Geronimo-explorers-item');
+    let explorerForm;
 
-    const explorerForm = new ExplorerForm(formData.body);
+    if (formData.body) {
+      explorerForm = new ExplorerForm(formData.body);
+    }
 
-    console.log(formData);
-
-    newExplorer.innerHTML = (`
+    newExplorer.innerHTML = explorerForm ? (`
       <div class="Geronimo-explorerCard mdl-card mdl-shadow--2dp">
         <div class="mdl-card__title mdl-card--expand">
           <h4>${formData.title}</h4>
@@ -1178,8 +1191,20 @@ class ExplorerComponent {
           <div class="mdl-layout-spacer"></div>
           ${explorerForm.getForm()}
         </div>
-      </div>
-    `);
+      </div>`
+    ) : (
+      `<div class="Geronimo-explorerCard mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h4>${formData.title}</h4>
+          <p>${formData.method}</p>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            ${formData.url}
+          </a>
+        </div>
+      </div>`
+    );
     explorerList.appendChild(newExplorer);
 
     const form = document.querySelector('form.Geronimo-explorer-form');
