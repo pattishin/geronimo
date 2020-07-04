@@ -20,6 +20,8 @@ const fetchQuery = function(data) {
   const { method, url, body } = data;
   let request = { method };
 
+  console.log(data);
+
   switch(method) {
     case 'put':
     case 'post':

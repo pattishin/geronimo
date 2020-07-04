@@ -5,21 +5,23 @@
  * ---------------------
  */ 
 class ExplorerForm {
-  constructor(body) {
+  constructor(name, body) {
+    this.name = name;
+    this.fields = body;
     this.getForm = this.getForm.bind(this);
-    this.form = this.render(body);
   }
 
   getForm() {
-    return this.form.outerHTML;
+    return this.render();
   }
 
-  render(body) {
+  render() {
     const newForm = document.createElement('form');
+    newForm.setAttribute('name', this.name);
     newForm.setAttribute('class', 'Geronimo-explorerForm');
 
-    if (body) {
-      body.forEach(item => {
+    if (this.fields) {
+      this.fields.forEach(item => {
         let inputWrapper = document.createElement('div');
         inputWrapper.setAttribute('class', 'Geronimo-form-item');
 
@@ -41,11 +43,11 @@ class ExplorerForm {
       });
     }
 
-    let submit = document.createElement('button');
-    submit.setAttribute('type', 'submit');
-    submit.innerHTML = 'Execute';
+    let submitButton = document.createElement('button');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.innerHTML = 'Execute';
 
-    newForm.appendChild(submit);
+    newForm.appendChild(submitButton);
 
     return newForm;
   }

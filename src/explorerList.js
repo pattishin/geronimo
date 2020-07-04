@@ -9,34 +9,44 @@ const ExplorerComponent = require('./explorer.js');
  */ 
 class ExplorerList {
   constructor(configs) {
-    this.render = this.render.bind(this);
-    
     this.configs = configs;
+    this.explorerListMap = {};
+
+    // Maintain "this" reference
+    this.render = this.render.bind(this);
+    this.initializeExplorerForms = this.initializeExplorerForms.bind(this);
+
+    // Root
     this.explorerList = document.querySelector('.Geronimo-explorers'); 
 
     this.render();
   }
 
-  onFormSubmit() {
-    const explorerForms = document.querySelector('form.Geronimo-explorerForm');
+  initializeExplorerForms() {
+    const explorerForms = document.querySelectorAll('form.Geronimo-explorerForm');
 
+    console.log(this.explorerListMap);
     console.log(explorerForms);
 
     explorerForms.forEach(form => {
       form.addEventListener("submit", e => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        debugger;
-
+        if (e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+          
+        const { method, url, body } = this.explorerListMap[form.name];
         const customRequest = {
-          method: formData.method,
-          url: formData.url,
-          body: helpers.serialize(form)
+          method,
+          url,
+          body: body && helpers.serialize(form)
         };
 
         helpers.fetchQuery(customRequest).then(response => {
           console.log(response);
+          const result = document.createElement('p');
+          result.innerHTML = `${JSON.stringify(response)}`;
+          form.parentElement.appendChild(result);
         });
       });
     });
@@ -44,16 +54,16 @@ class ExplorerList {
   }
 
   render() {
-    this.configs.map(config => {
-      const newExplorer = new ExplorerComponent(
-        config.method,
-        config.title,
-        config.url,
-        config.body
-      );
+    this.configs.forEach((config, index) => {
+      const { title, method, url, body } = config;
+      const formName = `${title}_${url}_${method}`;
+      const newExplorer = new ExplorerComponent(method, title, url, body);
 
+      this.explorerListMap[formName] = config;
       this.explorerList.appendChild(newExplorer.getExplorer());
     });
+
+    this.initializeExplorerForms();
   }
 }
 

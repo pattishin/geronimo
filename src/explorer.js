@@ -9,9 +9,10 @@ const ExplorerForm = require('./explorerForm.js');
  */ 
 class ExplorerComponent {
   constructor(method, title, url, body) {
-    this.render = this.render.bind(this);
-
+    this.formName = `${title}_${url}_${method}`;
     this.formData = { method, title, url, body };
+    
+    this.render = this.render.bind(this);
   }
 
   getExplorer() {
@@ -19,22 +20,19 @@ class ExplorerComponent {
   }
 
   render() {
-    const data = this.formData && this.formData.body;
-    const explorerForm =  new ExplorerForm(data);
-    
+    const { title, url, body, method } = this.formData;
+    const explorerForm =  new ExplorerForm(this.formName, body);
     const newExplorer = document.createElement('div');
     newExplorer.setAttribute('class', 'Geronimo-explorerCard');
     
     newExplorer.innerHTML = (
       `<div>
-          <h4>${this.formData.title}</h4>
-          <p>${this.formData.method}</p>
+          <h4>${title}</h4>
+          <p>${method}</p>
         </div>
         <div>
-          <a target="blank" src="${this.formData.url}">
-            ${this.formData.url}
-          </a>
-          ${explorerForm.getForm()}
+          <a target="blank" src="${url}">${url}</a>
+          ${explorerForm.getForm().outerHTML}
         </div>`
     );
 

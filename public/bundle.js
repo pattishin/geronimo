@@ -1167,9 +1167,10 @@ const ExplorerForm = require('./explorerForm.js');
  */ 
 class ExplorerComponent {
   constructor(method, title, url, body) {
-    this.render = this.render.bind(this);
-
+    this.formName = `${title}_${url}_${method}`;
     this.formData = { method, title, url, body };
+    
+    this.render = this.render.bind(this);
   }
 
   getExplorer() {
@@ -1177,22 +1178,19 @@ class ExplorerComponent {
   }
 
   render() {
-    const data = this.formData && this.formData.body;
-    const explorerForm =  new ExplorerForm(data);
-    
+    const { title, url, body, method } = this.formData;
+    const explorerForm =  new ExplorerForm(this.formName, body);
     const newExplorer = document.createElement('div');
     newExplorer.setAttribute('class', 'Geronimo-explorerCard');
     
     newExplorer.innerHTML = (
       `<div>
-          <h4>${this.formData.title}</h4>
-          <p>${this.formData.method}</p>
+          <h4>${title}</h4>
+          <p>${method}</p>
         </div>
         <div>
-          <a target="blank" src="${this.formData.url}">
-            ${this.formData.url}
-          </a>
-          ${explorerForm.getForm()}
+          <a target="blank" src="${url}">${url}</a>
+          ${explorerForm.getForm().outerHTML}
         </div>`
     );
 
@@ -1210,21 +1208,23 @@ module.exports = ExplorerComponent;
  * ---------------------
  */ 
 class ExplorerForm {
-  constructor(body) {
+  constructor(name, body) {
+    this.name = name;
+    this.fields = body;
     this.getForm = this.getForm.bind(this);
-    this.form = this.render(body);
   }
 
   getForm() {
-    return this.form.outerHTML;
+    return this.render();
   }
 
-  render(body) {
+  render() {
     const newForm = document.createElement('form');
+    newForm.setAttribute('name', this.name);
     newForm.setAttribute('class', 'Geronimo-explorerForm');
 
-    if (body) {
-      body.forEach(item => {
+    if (this.fields) {
+      this.fields.forEach(item => {
         let inputWrapper = document.createElement('div');
         inputWrapper.setAttribute('class', 'Geronimo-form-item');
 
@@ -1246,11 +1246,11 @@ class ExplorerForm {
       });
     }
 
-    let submit = document.createElement('button');
-    submit.setAttribute('type', 'submit');
-    submit.innerHTML = 'Execute';
+    let submitButton = document.createElement('button');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.innerHTML = 'Execute';
 
-    newForm.appendChild(submit);
+    newForm.appendChild(submitButton);
 
     return newForm;
   }
@@ -1270,34 +1270,44 @@ const ExplorerComponent = require('./explorer.js');
  */ 
 class ExplorerList {
   constructor(configs) {
-    this.render = this.render.bind(this);
-    
     this.configs = configs;
+    this.explorerListMap = {};
+
+    // Maintain "this" reference
+    this.render = this.render.bind(this);
+    this.initializeExplorerForms = this.initializeExplorerForms.bind(this);
+
+    // Root
     this.explorerList = document.querySelector('.Geronimo-explorers'); 
 
     this.render();
   }
 
-  onFormSubmit() {
-    const explorerForms = document.querySelector('form.Geronimo-explorerForm');
+  initializeExplorerForms() {
+    const explorerForms = document.querySelectorAll('form.Geronimo-explorerForm');
 
+    console.log(this.explorerListMap);
     console.log(explorerForms);
 
     explorerForms.forEach(form => {
       form.addEventListener("submit", e => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        debugger;
-
+        if (e) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+          
+        const { method, url, body } = this.explorerListMap[form.name];
         const customRequest = {
-          method: formData.method,
-          url: formData.url,
-          body: helpers.serialize(form)
+          method,
+          url,
+          body: body && helpers.serialize(form)
         };
 
         helpers.fetchQuery(customRequest).then(response => {
           console.log(response);
+          const result = document.createElement('p');
+          result.innerHTML = `${JSON.stringify(response)}`;
+          form.parentElement.appendChild(result);
         });
       });
     });
@@ -1305,16 +1315,16 @@ class ExplorerList {
   }
 
   render() {
-    this.configs.map(config => {
-      const newExplorer = new ExplorerComponent(
-        config.method,
-        config.title,
-        config.url,
-        config.body
-      );
+    this.configs.forEach((config, index) => {
+      const { title, method, url, body } = config;
+      const formName = `${title}_${url}_${method}`;
+      const newExplorer = new ExplorerComponent(method, title, url, body);
 
+      this.explorerListMap[formName] = config;
       this.explorerList.appendChild(newExplorer.getExplorer());
     });
+
+    this.initializeExplorerForms();
   }
 }
 
@@ -1342,6 +1352,8 @@ const serialize = function(form) {
 const fetchQuery = function(data) {
   const { method, url, body } = data;
   let request = { method };
+
+  console.log(data);
 
   switch(method) {
     case 'put':
