@@ -1,8 +1,8 @@
 'use strict';
 
-const formHelpers = require('../helpers/forms.js');
-const batchConfig = require('../examples/batch.json');
-const ExplorerList = require('./explorerList.js');
+const formHelpers = require('../../helpers/forms.js');
+const batchConfig = require('../../examples/batch.json');
+const ExplorerList = require('../explorers/explorerList.js');
 
 /**
  * Dashboard

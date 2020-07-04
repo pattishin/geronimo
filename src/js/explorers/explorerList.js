@@ -1,7 +1,7 @@
 'use strict';
 
-const fetchHelpers = require('../helpers/fetch.js');
-const formHelpers = require('../helpers/forms.js');
+const fetchHelpers = require('../../helpers/fetch.js');
+const formHelpers = require('../../helpers/forms.js');
 const ExplorerComponent = require('./explorer.js');
 
 /**

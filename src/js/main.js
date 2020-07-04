@@ -1,6 +1,6 @@
 'use strict';
 
-var Dashboard = require('./dashboard.js');
+var Dashboard = require('./dashboard/dashboard.js');
 
 // Polyfilling promises and fetch for
 var Promise = require('promise-polyfill');

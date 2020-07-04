@@ -1191,8 +1191,6 @@ const fetchQuery = function(data) {
     url = `${data.url}/${data.body.id}`;
   }
 
-  console.log(url);
-
   return fetch(url, request).then(res => res.json())
 }
 
@@ -1224,9 +1222,9 @@ module.exports = { serialize };
 },{}],8:[function(require,module,exports){
 'use strict';
 
-const formHelpers = require('../helpers/forms.js');
-const batchConfig = require('../examples/batch.json');
-const ExplorerList = require('./explorerList.js');
+const formHelpers = require('../../helpers/forms.js');
+const batchConfig = require('../../examples/batch.json');
+const ExplorerList = require('../explorers/explorerList.js');
 
 /**
  * Dashboard
@@ -1274,7 +1272,7 @@ class Dashboard {
 module.exports = Dashboard;
 
 
-},{"../examples/batch.json":5,"../helpers/forms.js":7,"./explorerList.js":11}],9:[function(require,module,exports){
+},{"../../examples/batch.json":5,"../../helpers/forms.js":7,"../explorers/explorerList.js":11}],9:[function(require,module,exports){
 'use strict';
 
 const ExplorerForm = require('./explorerForm.js');
@@ -1393,8 +1391,8 @@ module.exports = ExplorerForm;
 },{}],11:[function(require,module,exports){
 'use strict';
 
-const fetchHelpers = require('../helpers/fetch.js');
-const formHelpers = require('../helpers/forms.js');
+const fetchHelpers = require('../../helpers/fetch.js');
+const formHelpers = require('../../helpers/forms.js');
 const ExplorerComponent = require('./explorer.js');
 
 /**
@@ -1470,10 +1468,10 @@ class ExplorerList {
 
 module.exports = ExplorerList;
 
-},{"../helpers/fetch.js":6,"../helpers/forms.js":7,"./explorer.js":9}],12:[function(require,module,exports){
+},{"../../helpers/fetch.js":6,"../../helpers/forms.js":7,"./explorer.js":9}],12:[function(require,module,exports){
 'use strict';
 
-var Dashboard = require('./dashboard.js');
+var Dashboard = require('./dashboard/dashboard.js');
 
 // Polyfilling promises and fetch for
 var Promise = require('promise-polyfill');
@@ -1490,4 +1488,4 @@ if (!window.Promise) {
   const dashboard = new Dashboard();
 })();
 
-},{"./dashboard.js":8,"promise-polyfill":3,"whatwg-fetch":4}]},{},[12]);
+},{"./dashboard/dashboard.js":8,"promise-polyfill":3,"whatwg-fetch":4}]},{},[12]);

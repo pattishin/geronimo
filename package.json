@@ -6,7 +6,7 @@
   "scripts": {
     "build": "browserify src/js/main.js > public/bundle.js",
     "start": "npm run build && python -m SimpleHTTPServer 8080",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Patti Shin",
   "license": "ISC",
@@ -16,5 +16,9 @@
     "parcel-bundler": "^1.12.4",
     "promise-polyfill": "^8.1.3",
     "whatwg-fetch": "^3.1.0"
+  },
+  "devDependencies": {
+    "jest": "^26.1.0",
+    "mocha": "^8.0.1"
   }
 }
