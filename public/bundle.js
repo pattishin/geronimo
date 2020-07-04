@@ -1112,52 +1112,86 @@ module.exports = Promise;
 'use strict';
 
 const helpers = require('./helpers.js');
+const batchConfig = require('./examples/batch.json');
 const ExplorerList = require('./explorerList.js');
 
 /**
  * Dashboard
  * ---------------------
+ * Houses the configuration forms for batch or single loading
+ * and the API explorer list (and related forms)
  */ 
 class Dashboard {
-  constructor(title, url, method, body) {
+  constructor() {
     this.render = this.render.bind(this);
     this.initializeForms = this.initializeForms.bind(this);
 
+    this.batchForm = document.querySelector('form.Geronimo-form1');
+    this.singleForm = document.querySelector('form.Geronimo-form2');
+
+    // Set up listeners for batch/ single form submissions
     this.initializeForms();
+    this.configs = [];
   }
-
+  
   initializeForms() {
-    const batchForm = document.querySelector('.Geronimo-form1');
-    const singleForm = document.querySelector('.Geronimo-form2');
-    
-    batchForm.addEventListener("submit", e => {
-      e.preventDefault();
-      e.stopPropagation();
-      const formData = helpers.serialize(batchForm);
-      
-      this.render(JSON.parse(formData.config)); 
-    });
+    // Pre-populate batch form text area with example json
+    this.batchForm.querySelector('textarea').innerHTML =  JSON.stringify(batchConfig);
 
-    singleForm.addEventListener("submit", e => {
-      e.preventDefault();
-      e.stopPropagation();
-      const formData = helpers.serialize(singleForm);
-
-      console.log(formData);
-
-      this.render([formData]); 
-    });
+    this.batchForm.addEventListener("submit", e => this.onFormSubmit(e, true));
+    this.singleForm.addEventListener("submit", e => this.onFormSubmit(e, false));
   }
 
-  render(configs) {
-    const explorerList = new ExplorerList(configs);
+  onFormSubmit(e, isBatch) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const formData = helpers.serialize(isBatch ? this.batchForm: this.singleForm);
+    this.configs = isBatch ? JSON.parse(formData.config) : [ formData ]; 
+    this.render();
+  }
+
+  render() {
+    return new ExplorerList(this.configs);
   }
 }
 
 module.exports = Dashboard;
 
 
-},{"./explorerList.js":8,"./helpers.js":9}],6:[function(require,module,exports){
+},{"./examples/batch.json":6,"./explorerList.js":9,"./helpers.js":10}],6:[function(require,module,exports){
+module.exports=[{
+  "title": "Create new user",
+  "url": "https://jsonplaceholder.typicode.com/users",
+  "method": "POST",
+  "body": [{
+    "name": "email",
+    "type": "email",
+    "max": 24,
+    "min": 3
+  },
+  {
+    "name": "full-name",
+    "type": "text",
+    "placeholder": "John Doe",
+    "required": true
+  },
+  {
+    "name": "phone",
+    "type": "tel"
+  }
+  ]
+},
+{
+  "title": "Get users",
+  "url": "https://jsonplaceholder.typicode.com/users",
+  "method": "GET"
+}]
+
+
+},{}],7:[function(require,module,exports){
 'use strict';
 
 const helpers = require('./helpers.js');
@@ -1168,14 +1202,22 @@ const ExplorerForm = require('./explorerForm.js');
  * ---------------------
  */ 
 class ExplorerComponent {
+  /**
+   * @method constructor
+   * @param title - title of API explorer item
+   * @param url - base url to execute query
+   * @param method - method (GET, POST, PUT, DELETE) for query
+   * @param body - body to submit in query
+   */ 
   constructor(method, title, url, body) {
     this.formName = `${title}_${url}_${method}`;
     this.formData = { method, title, url, body };
     
+    this.getElement = this.getElement.bind(this);
     this.render = this.render.bind(this);
   }
 
-  getExplorer() {
+  getElement() {
     return this.render();
   }
 
@@ -1186,14 +1228,19 @@ class ExplorerComponent {
     newExplorer.setAttribute('class', 'Geronimo-explorerCard');
     
     newExplorer.innerHTML = (
-      `<div>
+      `<div class="Geronimo-explorerCardPanel">
+        <div>
           <h4>${title}</h4>
           <p>${method}</p>
         </div>
         <div>
           <a target="blank" src="${url}">${url}</a>
-          ${explorerForm.getForm().outerHTML}
-        </div>`
+          ${explorerForm.getElement().outerHTML}
+        </div>
+      </div>
+      <div class="Geronimo-explorerCardPanel Geronimo-explorerCardResult">
+        <p>Execute query!</p>
+      </div>`
     );
 
     return newExplorer;
@@ -1202,7 +1249,7 @@ class ExplorerComponent {
 
 module.exports = ExplorerComponent;
 
-},{"./explorerForm.js":7,"./helpers.js":9}],7:[function(require,module,exports){
+},{"./explorerForm.js":8,"./helpers.js":10}],8:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1213,10 +1260,11 @@ class ExplorerForm {
   constructor(name, body) {
     this.name = name;
     this.fields = body;
-    this.getForm = this.getForm.bind(this);
+
+    this.getElement = this.getElement.bind(this);
   }
 
-  getForm() {
+  getElement() {
     return this.render();
   }
 
@@ -1260,7 +1308,7 @@ class ExplorerForm {
 
 module.exports = ExplorerForm;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 const helpers = require('./helpers.js');
@@ -1269,103 +1317,103 @@ const ExplorerComponent = require('./explorer.js');
 /**
  * ExplorerList
  * ---------------------
- */ 
+ * Controller class for all created Explorer classes
+ */
 class ExplorerList {
+  /**
+   * @method constructor
+   * @param configs - json objects of explorer items to create
+   */ 
   constructor(configs) {
     this.configs = configs;
     this.explorerListMap = {};
 
     // Maintain "this" reference
-    this.render = this.render.bind(this);
-    this.initializeExplorerForms = this.initializeExplorerForms.bind(this);
-
-    // Root
-    this.explorerList = document.querySelector('.Geronimo-explorers'); 
-
-    this.render();
+    this.main = this.main.bind(this);
+    this.onFormSubmit = this.onFormSubmit.bind(this);
+    
+    // Root element
+    this.explorerList = document.querySelector('.Geronimo-explorerList'); 
+    this.explorerEmptyList = document.querySelector('.Geronimo-explorerEmptyList'); 
+    
+    this.main();
   }
 
-  initializeExplorerForms() {
-    const explorerForms = document.querySelectorAll('form.Geronimo-explorerForm');
+  /**
+   * @method onFormSubmit
+   */ 
+  onFormSubmit(e, form) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
 
-    console.log(this.explorerListMap);
-    console.log(explorerForms);
+    const { method, url, body } = this.explorerListMap[form.name];
+    const customRequest = {
+      method,
+      url,
+      body: body && helpers.serialize(form)
+    };
 
-    explorerForms.forEach(form => {
-      form.addEventListener("submit", e => {
-        if (e) {
-          e.stopPropagation();
-          e.preventDefault();
-        }
-          
-        const { method, url, body } = this.explorerListMap[form.name];
-        const customRequest = {
-          method,
-          url,
-          body: body && helpers.serialize(form)
-        };
-
-        helpers.fetchQuery(customRequest).then(response => {
-          console.log(response);
-          const result = document.createElement('p');
-          result.innerHTML = `${JSON.stringify(response)}`;
-          form.parentElement.appendChild(result);
-        });
-      });
+    helpers.fetchQuery(customRequest).then(response => {
+      form.parentElement.parentElement.nextElementSibling.innerHTML = `<p>${JSON.stringify(response)}</p>`;
     });
-  
   }
 
-  render() {
-    console.log(this.configs);
-
-    this.configs.forEach((config, index) => {
+  /**
+   * @method main
+   */ 
+  main() {
+    this.configs && this.configs.forEach((config, index) => {
       const { title, method, url, body } = config;
       const formName = `${title}_${url}_${method}`;
       const newExplorer = new ExplorerComponent(method, title, url, body);
 
       this.explorerListMap[formName] = config;
-      this.explorerList.appendChild(newExplorer.getExplorer());
+      this.explorerEmptyList.setAttribute('style', 'display: none');
+      this.explorerList.appendChild(newExplorer.getElement());
     });
 
-    this.initializeExplorerForms();
+    const explorerForms = document.querySelectorAll('form.Geronimo-explorerForm');
+
+    // Listens for form submissions from Explorer items
+    explorerForms.forEach(form => form.addEventListener("submit", e => this.onFormSubmit(e, form)));
   }
 }
 
 module.exports = ExplorerList;
 
-},{"./explorer.js":6,"./helpers.js":9}],9:[function(require,module,exports){
+},{"./explorer.js":7,"./helpers.js":10}],10:[function(require,module,exports){
 
+/**
+ * @function: serialize
+ * @description: Retrieves all values from given html form
+ */ 
 const serialize = function(form) {
   let serialized = {};
 
   for(let i = 0; i < form.elements.length; i++){
     const field = form.elements[i];
-    if (field.name) {
-      serialized[field.name] = (
-        field.name === 'body' && field.value
-          ? JSON.parse(field.value)
-          : ''
-        );
+    if (field.name && field.value) {
+      field.name !== 'body'
+        ? serialized[field.name] = field.value
+        : serialized[field.name] = JSON.parse(field.value);
     }
   }
 
   return serialized;
 }
 
+/**
+ * @function: fetchQuery
+ * @description: Executes given fetch request and returns a promise with response
+ */ 
 const fetchQuery = function(data) {
   const { method, url, body } = data;
   let request = { method };
 
-  console.log(data);
-
-  switch(method) {
-    case 'put':
-    case 'post':
-      request['body'] = body || {};
-      break;
-    case 'delete':
-      break;
+  if (method === 'post' || method === 'put') {
+    request['body'] = body || {};
   }
 
   return fetch(url, request).then(res => res.json())
@@ -1376,7 +1424,7 @@ module.exports = {
   fetchQuery
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var Dashboard = require('./dashboard.js');
@@ -1389,8 +1437,11 @@ if (!window.Promise) {
   window.Promise = Promise;
 }
 
+/**
+ * Initialize the application!
+ */ 
 (function main() {
   const dashboard = new Dashboard();
 })();
 
-},{"./dashboard.js":5,"promise-polyfill":3,"whatwg-fetch":4}]},{},[10]);
+},{"./dashboard.js":5,"promise-polyfill":3,"whatwg-fetch":4}]},{},[11]);

@@ -10,6 +10,9 @@ if (!window.Promise) {
   window.Promise = Promise;
 }
 
+/**
+ * Initialize the application!
+ */ 
 (function main() {
   const dashboard = new Dashboard();
 })();

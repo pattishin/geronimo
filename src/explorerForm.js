@@ -8,10 +8,11 @@ class ExplorerForm {
   constructor(name, body) {
     this.name = name;
     this.fields = body;
-    this.getForm = this.getForm.bind(this);
+
+    this.getElement = this.getElement.bind(this);
   }
 
-  getForm() {
+  getElement() {
     return this.render();
   }
 

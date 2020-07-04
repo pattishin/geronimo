@@ -1,4 +1,3 @@
-
 html, body {
   font-family: "Bitstream Vera Sans Mono", monospace;
   color: rgba(36,198,224,1.0) !important;
@@ -53,13 +52,25 @@ button:hover {
 }
 
 header {
-  border: 3px solid rgba(36,198,224, 1.0);
-  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 9px rgba(21,171,195,1.0);
+  flex-direction: column;
   font-size: 25px;
+  border: 3px solid rgba(36,198,224, 1.0);
+  border-radius: 15px;
+  box-shadow: 0 0 9px rgba(21,171,195,1.0);
+  margin: 15px;
+}
+
+h2.Geronimo-subtitle {
+  font-size: 15px;
+  font-weight: normal;
+}
+
+h1.Geronimo-title,
+h2.Geronimo-subtitle {
+  margin: 5px auto;
 }
 
 h1.Geronimo-title::after {
@@ -73,8 +84,8 @@ h1.Geronimo-title::after {
   animation: blink 1s step-end infinite;
 }
 
-h2:before,
-h2:after {
+h2.Geronimo-pathTitle:before,
+h2.Geronimo-pathTitle:after {
   content: "";
   display: inline-block;
   width: 130px;
@@ -85,13 +96,13 @@ h2:after {
   border-bottom: transparent;
 }
 
-h2:after {
+h2.Geronimo-pathTitle:after {
   left: 50px;
   border-radius: 0px 100px;
   border-left: transparent;
 }
 
-h2:before {
+h2.Geronimo-pathTitle:before {
   right: 50px;
   border-radius: 100px 0px;
   border-right: transparent;
@@ -109,65 +120,3 @@ h2:before {
   100% { opacity: 1.0; }
 }
 
-div.Geronimo-explorerCard {
-  width: inherit;
-  border: 1px solid rgba(36,198,224,1.0);
-  border-radius: 5px;
-  padding: 20px;
-  margin-bottom: 10px;
-}
-
-div.Geronimo-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: inherit;
-  flex-direction: column;
-}
-
-div.Geronimo-panelWrapper {
-  display: flex;
-  justify-content: space-between;
-  width: inherit;
-  background-color: #151515;
-  border-radius: 5px;
-  margin-bottom: 25px;
-  z-index: 1;
-}
-
-div.Geronimo-explorers {
-  display: flex;
-  width: inherit;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-form.Geronimo-form1,
-form.Geronimo-form2 {
-  display: flex;
-  flex-direction: column;
-  width: inherit;
-  border: 1px solid;
-  padding: 20px;
-}
-
-form.Geronimo-form1:hover,
-form.Geronimo-form2:hover {
-  background: rgb(26, 45, 48);
-}
-
-form.Geronimo-form1 {
-  margin-right: 20px;
-}
-
-div.Geronimo-form-item {
-  display: flex;
-  flex-direction: column;
-}
-
-form.Geronimo-explorers-form {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-}

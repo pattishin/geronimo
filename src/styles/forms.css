@@ -1,0 +1,29 @@
+form.Geronimo-form1,
+form.Geronimo-form2 {
+  display: flex;
+  flex-direction: column;
+  width: inherit;
+  border: 1px solid;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+form.Geronimo-form1:hover,
+form.Geronimo-form2:hover {
+  background: rgb(26, 45, 48);
+}
+
+form.Geronimo-form1 {
+  margin-right: 20px;
+}
+
+div.Geronimo-form-item {
+  display: flex;
+  flex-direction: column;
+}
+
+form.Geronimo-explorers-form {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}

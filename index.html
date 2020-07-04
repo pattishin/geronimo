@@ -6,27 +6,31 @@
     <meta http-equiv="x-ua-compatible" content="ie-edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Geronimo</title>
-    <link rel="stylesheet" href="./index.css" />
+    <link rel="stylesheet" href="./src/styles/index.css" />
+    <link rel="stylesheet" href="./src/styles/dashboard.css" />
+    <link rel="stylesheet" href="./src/styles/explorer.css" />
+    <link rel="stylesheet" href="./src/styles/forms.css" />
     <link href='https://fonts.googleapis.com/css?family=Roboto Mono' rel='stylesheet'>
   </head>
   <body>
     <header>
       <h1 class="Geronimo-title">$geronimo</h1>
+      <h2 class="Geronimo-subtitle">Sandbox API Explorer</h2>
     </header>
     <div class="Geronimo-container">
-      <h2>Choose your path</h2>
+      <h2 className="Geronimo-pathTitle">Choose your path</h2>
       <div class="Geronimo-panelWrapper">
         <!-- Add Batch Explorer Form -->
-        <form class="Geronimo-form1">
+        <form name="Geronimo-batchForm" class="Geronimo-form1">
           <h3>Load multiple</h3>
           <div class="Geronimo-form-item">
             <label for="config">Configuration</label>
             <textarea type="text" rows= "16" name="config"></textarea>
           </div>
-          <button type="submit">Create Batch</button>
+          <button type="submit">Add Batch</button>
         </form>
         <!-- Add Single Explorer Form -->
-        <form class="Geronimo-form2">
+        <form name="Geronimo-singleForm" class="Geronimo-form2">
           <h3>Load single</h3>
           <!-- Title input -->
           <div class="Geronimo-form-item">
@@ -37,7 +41,6 @@
           <div class="Geronimo-form-item">
             <label for="method">Method</label>
             <select id="method" name="method">
-              <option value=""></option>
               <option value="get">GET</option>
               <option value="post">POST</option>
               <option value="put">PUT</option>
@@ -55,11 +58,16 @@
             <textarea type="text" rows= "3" name="body" ></textarea>
           </div>
            <!-- Accent-colored raised button with ripple -->
-           <button type="submit">Add Single Explorer</button>
+           <button type="submit">Add Single</button>
         </form>
       </div>
       <div class="Geronimo-panelWrapper">
-        <div class="Geronimo-explorers"></div>
+        <div class="Geronimo-explorerListWrapper">
+          <h3>Loaded API Explorers</h3>
+          <div class="Geronimo-explorerList">
+            <p class="Geronimo-explorerEmptyList"> None ... yet </p>
+          </div>
+        </div>
       </div>
     </div>
     <script src="./public/bundle.js"></script>
