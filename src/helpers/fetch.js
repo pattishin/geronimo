@@ -3,11 +3,25 @@
  * @description: Executes given fetch request and returns a promise with response
  */ 
 const fetchQuery = function(data) {
-  const { method, url, body } = data;
-  let request = { method };
+  let request = {
+    method: data.method
+  };
 
-  if (method === 'post' || method === 'put') {
-    request['body'] = body || {};
+  let url = data.url;
+  
+  if (data.method === 'POST') {
+    request['body'] = data.body || {};
+  }
+
+  //TODO: Throw error if no given no json or id
+  if (data.method === 'PUT') {
+    url = `${data.url}/${data.body.id}`;
+    request['body'] = data.body || {};
+  }
+  
+  //TODO: Throw error if no given no id
+  if (data.method === 'DELETE') {
+    url = `${data.url}/${data.body.id}`;
   }
 
   return fetch(url, request).then(res => res.json())

@@ -55,9 +55,13 @@ class ExplorerList {
    */ 
   main() {
     this.configs && this.configs.forEach((config, index) => {
-      const { title, method, url, body } = config;
-      const formName = `${title}_${url}_${method}`;
-      const newExplorer = new ExplorerComponent(method, title, url, body);
+      const formName = `${config.title}_${config.url}_${config.method}`;
+      const newExplorer = new ExplorerComponent(
+        config.method,
+        config.title,
+        config.url,
+        config.body
+      );
 
       this.explorerListMap[formName] = config;
       this.explorerEmptyList.setAttribute('style', 'display: none');

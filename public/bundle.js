@@ -1110,33 +1110,59 @@ module.exports = Promise;
 
 },{}],5:[function(require,module,exports){
 module.exports=[{
-  "title": "Create new user",
-  "url": "https://jsonplaceholder.typicode.com/users",
-  "method": "POST",
-  "body": [{
-    "name": "email",
-    "type": "email",
-    "max": 24,
-    "min": 3
-  },
-  {
-    "name": "full-name",
-    "type": "text",
-    "placeholder": "John Doe",
-    "required": true
-  },
-  {
-    "name": "phone",
-    "type": "tel"
-  }
-  ]
-},
-{
-  "title": "Get users",
-  "url": "https://jsonplaceholder.typicode.com/users",
-  "method": "GET"
-}]
-
+		"title": "Create new user",
+		"url": "https://jsonplaceholder.typicode.com/users",
+		"method": "POST",
+		"body": [{
+			"name": "email",
+			"type": "email",
+			"max": 24,
+			"min": 3
+		}, {
+			"name": "full-name",
+			"type": "text",
+			"placeholder": "John Doe",
+			"required": true
+		}, {
+			"name": "phone",
+			"type": "tel"
+		}]
+	}, {
+		"title": "Get users",
+		"url": "https://jsonplaceholder.typicode.com/users",
+		"method": "GET"
+	}, {
+		"title": "Delete User",
+		"url": "https://jsonplaceholder.typicode.com/users",
+		"method": "DELETE",
+		"body": [{
+			"name": "id",
+			"type": "number"
+		}]
+	},
+	{
+		"title": "Update User",
+		"url": "https://jsonplaceholder.typicode.com/users",
+		"method": "PUT",
+		"body": [{
+			"name": "id",
+			"type": "number"
+		}, {
+			"name": "email",
+			"type": "email",
+			"max": 24,
+			"min": 3
+		}, {
+			"name": "full-name",
+			"type": "text",
+			"placeholder": "John Doe",
+			"required": true
+		}, {
+			"name": "phone",
+			"type": "tel"
+		}]
+	}
+]
 
 },{}],6:[function(require,module,exports){
 /**
@@ -1144,12 +1170,28 @@ module.exports=[{
  * @description: Executes given fetch request and returns a promise with response
  */ 
 const fetchQuery = function(data) {
-  const { method, url, body } = data;
-  let request = { method };
+  let request = {
+    method: data.method
+  };
 
-  if (method === 'post' || method === 'put') {
-    request['body'] = body || {};
+  let url = data.url;
+  
+  if (data.method === 'POST') {
+    request['body'] = data.body || {};
   }
+
+  //TODO: Throw error if no given no json or id
+  if (data.method === 'PUT') {
+    url = `${data.url}/${data.body.id}`;
+    request['body'] = data.body || {};
+  }
+  
+  //TODO: Throw error if no given no id
+  if (data.method === 'DELETE') {
+    url = `${data.url}/${data.body.id}`;
+  }
+
+  console.log(url);
 
   return fetch(url, request).then(res => res.json())
 }
@@ -1406,9 +1448,13 @@ class ExplorerList {
    */ 
   main() {
     this.configs && this.configs.forEach((config, index) => {
-      const { title, method, url, body } = config;
-      const formName = `${title}_${url}_${method}`;
-      const newExplorer = new ExplorerComponent(method, title, url, body);
+      const formName = `${config.title}_${config.url}_${config.method}`;
+      const newExplorer = new ExplorerComponent(
+        config.method,
+        config.title,
+        config.url,
+        config.body
+      );
 
       this.explorerListMap[formName] = config;
       this.explorerEmptyList.setAttribute('style', 'display: none');
