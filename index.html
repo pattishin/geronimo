@@ -7,60 +7,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Geronimo</title>
     <link rel="stylesheet" href="./index.css" />
-    <link rel="stylesheet" href="./overrides.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto Mono' rel='stylesheet'>
   </head>
   <body>
+    <header>
+      <h1 class="Geronimo-title">$geronimo</h1>
+    </header>
     <div class="Geronimo-container">
-      <div class="Geronimo-form-wrapper">
+      <h2>Choose your path</h2>
+      <div class="Geronimo-panelWrapper">
+        <!-- Add Batch Explorer Form -->
         <form class="Geronimo-form1">
-          <div class="mdl-textfield mdl-js-textfield">
-            <textarea class="mdl-textfield__input" type="text" rows= "3" name="config"></textarea>
-            <label class="mdl-textfield__label" for="config">Configuration</label>
+          <h3>Load multiple</h3>
+          <div class="Geronimo-form-item">
+            <label for="config">Configuration</label>
+            <textarea type="text" rows= "16" name="config"></textarea>
           </div>
-          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-            Create Batch
-          </button>
+          <button type="submit">Create Batch</button>
         </form>
+        <!-- Add Single Explorer Form -->
         <form class="Geronimo-form2">
+          <h3>Load single</h3>
           <!-- Title input -->
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="text" name="title"></input>
-            <label class="mdl-textfield__label" for="url">Title</label>
+          <div class="Geronimo-form-item">
+            <label for="url">Title</label>
+            <input type="text" name="title"></input>
           </div>
           <!-- Method dropdown -->
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <select class="mdl-textfield__input" id="method" name="method">
-              <option></option>
+          <div class="Geronimo-form-item">
+            <label for="method">Method</label>
+            <select id="method" name="method">
               <option value=""></option>
               <option value="get">GET</option>
               <option value="post">POST</option>
               <option value="put">PUT</option>
               <option value="delete">DELETE</option>
             </select>
-            <label class="mdl-textfield__label" for="method">Method</label>
           </div>
           <!-- Url input -->
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="text" name="url"></input>
-            <label class="mdl-textfield__label" for="url">Base url</label>
+          <div class="Geronimo-form-item">
+            <label for="url">Base url</label>
+            <input type="text" name="url"></input>
           </div>
           <!-- Body input -->
-          <div class="mdl-textfield mdl-js-textfield">
-            <textarea class="mdl-textfield__input" type="text" rows= "3" name="body" ></textarea>
-            <label class="mdl-textfield__label" for="body">Form body</label>
+          <div class="Geronimo-form-item">
+            <label for="body">Form body</label>
+            <textarea type="text" rows= "3" name="body" ></textarea>
           </div>
            <!-- Accent-colored raised button with ripple -->
-          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-            Create API Explorer
-          </button>
+           <button type="submit">Add Single Explorer</button>
         </form>
       </div>
-      <div class="Geronimo-explorers"></div>
+      <div class="Geronimo-panelWrapper">
+        <div class="Geronimo-explorers"></div>
+      </div>
     </div>
-    <div class="Geronimo-footer"></div>
     <script src="./public/bundle.js"></script>
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   </body>
 </html>

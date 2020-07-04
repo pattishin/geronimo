@@ -17,12 +17,10 @@ class ExplorerForm {
     for(let i = 0; i< body.length; i++) {
       const item = body[i];
       let inputWrapper = document.createElement('div');
-      inputWrapper.setAttribute('class', 'mdl-textfield mdl-js-textfield mdl-textfield--floating-label');
+      inputWrapper.setAttribute('class', 'Geronimo-form-item');
 
       let newLabel = document.createElement('label');
-
       let newInput = document.createElement('input');
-      newInput.setAttribute('class', 'mdl-textfield__input');
 
       Object.keys(item).map(key => {
         if (key === 'name') {
@@ -32,14 +30,13 @@ class ExplorerForm {
         newInput.setAttribute(key, item[key]);
       });
       
-      inputWrapper.appendChild(newInput);
       inputWrapper.appendChild(newLabel);
+      inputWrapper.appendChild(newInput);
 
       newForm.appendChild(inputWrapper);
     }
 
     let submit = document.createElement('button');
-    submit.setAttribute('class', 'mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent')
     submit.setAttribute('type', 'submit');
     submit.innerHTML = 'Execute';
 

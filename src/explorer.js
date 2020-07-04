@@ -5,48 +5,54 @@ const ExplorerForm = require('./explorerForm.js');
 
 class ExplorerComponent {
   constructor(method, title, url, body) {
-    this.data = { method, title, url, body };
+    this.displayLoader = this.displayLoader.bind(this);
+
     this.explorers = document.querySelector('.Geronimo-explorers');
-    this.displayExplorer({ method, title, url, body });
+    this.displayLoader({ method, title, url, body });
+  }
+
+  displayLoader(formData) {
+    const loader = document.createElement('p');
+    loader.innerHTML = 'Configuring ...';
+
+    this.explorers.appendChild(loader);
+
+    setTimeout(() => this.displayExplorer(formData), 1000);
   }
 
   displayExplorer(formData) {
     const explorerList = document.querySelector('.Geronimo-explorers'); 
     const newExplorer = document.createElement('div');
-    newExplorer.setAttribute('class', 'Geronimo-explorers-item');
+    newExplorer.setAttribute('class', 'Geronimo-explorerCard');
     let explorerForm;
 
     if (formData.body) {
       explorerForm = new ExplorerForm(formData.body);
     }
 
-    newExplorer.innerHTML = explorerForm ? (`
-      <div class="Geronimo-explorerCard mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
+    newExplorer.innerHTML = explorerForm ? (
+      `<div>
           <h4>${formData.title}</h4>
           <p>${formData.method}</p>
         </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+        <div>
+          <a target="blank" src="${formData.url}">
             ${formData.url}
           </a>
-          <div class="mdl-layout-spacer"></div>
           ${explorerForm.getForm()}
-        </div>
-      </div>`
-    ) : (
-      `<div class="Geronimo-explorerCard mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
+        </div>`
+    ) : (`
+        <div>
           <h4>${formData.title}</h4>
           <p>${formData.method}</p>
         </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+        <div>
+          <a target="blank" src="${formData.url}">
             ${formData.url}
           </a>
-        </div>
-      </div>`
+        </div>`
     );
+
     explorerList.appendChild(newExplorer);
 
     const form = document.querySelector('form.Geronimo-explorer-form');

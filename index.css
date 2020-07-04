@@ -1,9 +1,120 @@
 
-body {
-  max-width: 1080px;
+html, body {
+  font-family: "Bitstream Vera Sans Mono", monospace;
+  color: rgba(36,198,224,1.0) !important;
+  background-color: #151515;
   width: 100%;
-  margin: 20px auto !important;
-  background: #e6e6e6;
+  margin: auto;
+  max-width: 1080px;
+}
+
+body {
+  height: auto;
+}
+
+select,
+textarea,
+input {
+  font-family: "Bitstream Vera Sans Mono", monospace;
+  border: 1px solid rgba(21,171,195,0.7);
+  border-radius: 5px;
+  width: inherit;
+  background-color: #151515;
+  color: rgba(36,198,224,1.0);
+  padding: 10px;
+  width: inherit;
+  text-shadow: 0 0 5px rgba(21,171,195,0.7);
+}
+
+label {
+  margin: 10px 0;
+}
+
+select:focus,
+textarea:focus,
+input:focus {
+  outline: none;
+}
+
+button {
+  font-family: "Bitstream Vera Sans Mono", monospace;
+  border: 2px solid rgba(21,171,195,1.0);
+  border-radius: 5px;
+  margin: 10px 0;
+  padding: 20px;
+  background: transparent;
+  color: rgba(36,198,224,1.0);
+}
+
+button:hover {
+  border: 1px solid rgba(36,198,224,1.0);
+  background-color: rgba(36,198,224,1.0);
+  box-shadow: 0 0 7px rgba(36,198,224,1.0);
+}
+
+header {
+  border: 3px solid rgba(36,198,224, 1.0);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 9px rgba(21,171,195,1.0);
+  font-size: 25px;
+}
+
+h1.Geronimo-title::after {
+  content: "";
+  position: relative;
+  display: inline-flex;
+  background-color: rgba(36,198,224, 1.0);
+  width: 10px;
+  height: 31px;
+  left: 10px;
+  animation: blink 1s step-end infinite;
+}
+
+h2:before,
+h2:after {
+  content: "";
+  display: inline-block;
+  width: 130px;
+  height: 40px;
+  border: 2px solid rgba(36,198,224, 1.0);
+  position: relative;
+  top: 35px;
+  border-bottom: transparent;
+}
+
+h2:after {
+  left: 50px;
+  border-radius: 0px 100px;
+  border-left: transparent;
+}
+
+h2:before {
+  right: 50px;
+  border-radius: 100px 0px;
+  border-right: transparent;
+}
+
+@-webkit-keyframes blink {
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+
+@keyframes blink {
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+
+div.Geronimo-explorerCard {
+  width: inherit;
+  border: 1px solid rgba(36,198,224,1.0);
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 10px;
 }
 
 div.Geronimo-container {
@@ -14,36 +125,48 @@ div.Geronimo-container {
   flex-direction: column;
 }
 
-div.Geronimo-explorers,
-div.Geronimo-explorers table {
-  width: inherit;
-}
-
-div.Geronimo-explorers-item {
-  margin: 10px auto;
-}
-
-div.Geronimo-form-wrapper {
+div.Geronimo-panelWrapper {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  width: inherit;
+  background-color: #151515;
+  border-radius: 5px;
+  margin-bottom: 25px;
+  z-index: 1;
+}
+
+div.Geronimo-explorers {
+  display: flex;
+  width: inherit;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 form.Geronimo-form1,
 form.Geronimo-form2 {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 20px;
+  width: inherit;
+  border: 1px solid;
+  padding: 20px;
 }
 
-div.Geronimo-form-response {
-  border-radius: 5px;
-  background-color: #e5e5e5;
+form.Geronimo-form1:hover,
+form.Geronimo-form2:hover {
+  background: rgb(26, 45, 48);
 }
 
-form.Geronimo-explorer-form {
+form.Geronimo-form1 {
+  margin-right: 20px;
+}
+
+div.Geronimo-form-item {
+  display: flex;
+  flex-direction: column;
+}
+
+form.Geronimo-explorers-form {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;

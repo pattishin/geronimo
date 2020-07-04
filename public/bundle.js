@@ -1163,48 +1163,54 @@ const ExplorerForm = require('./explorerForm.js');
 
 class ExplorerComponent {
   constructor(method, title, url, body) {
-    this.data = { method, title, url, body };
+    this.displayLoader = this.displayLoader.bind(this);
+
     this.explorers = document.querySelector('.Geronimo-explorers');
-    this.displayExplorer({ method, title, url, body });
+    this.displayLoader({ method, title, url, body });
+  }
+
+  displayLoader(formData) {
+    const loader = document.createElement('p');
+    loader.innerHTML = 'Configuring ...';
+
+    this.explorers.appendChild(loader);
+
+    setTimeout(() => this.displayExplorer(formData), 1000);
   }
 
   displayExplorer(formData) {
     const explorerList = document.querySelector('.Geronimo-explorers'); 
     const newExplorer = document.createElement('div');
-    newExplorer.setAttribute('class', 'Geronimo-explorers-item');
+    newExplorer.setAttribute('class', 'Geronimo-explorerCard');
     let explorerForm;
 
     if (formData.body) {
       explorerForm = new ExplorerForm(formData.body);
     }
 
-    newExplorer.innerHTML = explorerForm ? (`
-      <div class="Geronimo-explorerCard mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
+    newExplorer.innerHTML = explorerForm ? (
+      `<div>
           <h4>${formData.title}</h4>
           <p>${formData.method}</p>
         </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+        <div>
+          <a target="blank" src="${formData.url}">
             ${formData.url}
           </a>
-          <div class="mdl-layout-spacer"></div>
           ${explorerForm.getForm()}
-        </div>
-      </div>`
-    ) : (
-      `<div class="Geronimo-explorerCard mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
+        </div>`
+    ) : (`
+        <div>
           <h4>${formData.title}</h4>
           <p>${formData.method}</p>
         </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+        <div>
+          <a target="blank" src="${formData.url}">
             ${formData.url}
           </a>
-        </div>
-      </div>`
+        </div>`
     );
+
     explorerList.appendChild(newExplorer);
 
     const form = document.querySelector('form.Geronimo-explorer-form');
@@ -1212,6 +1218,7 @@ class ExplorerComponent {
     form.addEventListener("submit", e => {
       e.stopPropagation();
       e.preventDefault();
+
       const customRequest = {
         method: formData.method,
         url: formData.url,
@@ -1247,12 +1254,10 @@ class ExplorerForm {
     for(let i = 0; i< body.length; i++) {
       const item = body[i];
       let inputWrapper = document.createElement('div');
-      inputWrapper.setAttribute('class', 'mdl-textfield mdl-js-textfield mdl-textfield--floating-label');
+      inputWrapper.setAttribute('class', 'Geronimo-form-item');
 
       let newLabel = document.createElement('label');
-
       let newInput = document.createElement('input');
-      newInput.setAttribute('class', 'mdl-textfield__input');
 
       Object.keys(item).map(key => {
         if (key === 'name') {
@@ -1262,14 +1267,13 @@ class ExplorerForm {
         newInput.setAttribute(key, item[key]);
       });
       
-      inputWrapper.appendChild(newInput);
       inputWrapper.appendChild(newLabel);
+      inputWrapper.appendChild(newInput);
 
       newForm.appendChild(inputWrapper);
     }
 
     let submit = document.createElement('button');
-    submit.setAttribute('class', 'mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent')
     submit.setAttribute('type', 'submit');
     submit.innerHTML = 'Execute';
 
