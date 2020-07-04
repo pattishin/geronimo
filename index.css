@@ -1,18 +1,39 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="./favicon.ico" />
-    <meta http-equiv="x-ua-compatible" content="ie-edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pet Store</title>
-    <link rel="stylesheet" href="./index.css" />
-  </head>
-  <body>
-    <div class="PetStore-header"></div>
-    <div class="PetStore-container">
-    </div>
-    <div class="PetStore-footer"></div>
-    <script src="./public/bundle.js" />
-  </body>
-</html>
+
+body {
+  max-width: 1080px;
+  width: 100%;
+  margin: 20px auto !important;
+  background: #e6e6e6;
+}
+
+div.Geronimo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: inherit;
+  flex-direction: column;
+}
+
+div.Geronimo-explorers,
+div.Geronimo-explorers table {
+  width: inherit;
+}
+
+form.Geronimo-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+}
+
+div.Geronimo-form-response {
+  border-radius: 5px;
+  background-color: #e5e5e5;
+}
+
+form.Geronimo-explorer-form {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}

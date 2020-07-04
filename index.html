@@ -7,29 +7,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Geronimo</title>
     <link rel="stylesheet" href="./index.css" />
+    <link rel="stylesheet" href="./overrides.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
   </head>
   <body>
-    <div class="Geronimo-header"></div>
     <div class="Geronimo-container">
+      <div class="Geronimo-form-wrapper">
+        <form class="Geronimo-form">
+          <!-- Title input -->
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" name="title"></input>
+            <label class="mdl-textfield__label" for="url">Title</label>
+          </div>
+          <!-- Method dropdown -->
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="method" name="method">
+              <option></option>
+              <option value=""></option>
+              <option value="get">GET</option>
+              <option value="post">POST</option>
+              <option value="put">PUT</option>
+              <option value="delete">DELETE</option>
+            </select>
+            <label class="mdl-textfield__label" for="method">Method</label>
+          </div>
+          <!-- Url input -->
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" name="url"></input>
+            <label class="mdl-textfield__label" for="url">Base url</label>
+          </div>
+          <!-- Body input -->
+          <div class="mdl-textfield mdl-js-textfield">
+            <textarea class="mdl-textfield__input" type="text" rows= "3" name="body" ></textarea>
+            <label class="mdl-textfield__label" for="body">Form body</label>
+          </div>
+           <!-- Accent-colored raised button with ripple -->
+          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Submit
+          </button>
+        </form>
+        <div class="Geronimo-form-response"></div>
+      </div>
       <div class="Geronimo-explorers">
       </div>
-      <form class="Geronimo-form">
-        <label for="title">title</label>
-        <input type="text" name="title"></input>
-        <select id="Geronimo-type" name="method">
-          <option value="get">GET</option>
-          <option value="post">POST</option>
-          <option value="put">PUT</option>
-          <option value="delete">DELETE</option>
-        </select>
-        <label for="url">url</label>
-        <input type="text" name="url"></input>
-        <label for="body">body</label>
-        <textarea type="text" name="body"></textarea>
-        <button type="submit">Submit</button>
-      </form>
     </div>
     <div class="Geronimo-footer"></div>
     <script src="./public/bundle.js"></script>
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   </body>
 </html>

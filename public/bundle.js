@@ -1127,58 +1127,136 @@ class Dashboard {
     e.stopPropagation();
 
     const formData = helpers.serialize(this.form);
-    const newExplorer = new ExplorerComponent(formData);
+      const newExplorer = new ExplorerComponent(
+        formData.method,
+        formData.title,
+        formData.url,
+        formData.body
+      );
+  }
 
-    helpers.fetchQuery(formData).then(data => {
-      console.log(data);
-    });
+  displayResponse(response) {
+    const responseWrapper = document.querySelector('.Geronimo-form-response'); 
+    responseWrapper.innerHTML = JSON.stringify(response);
   }
 }
 
 module.exports = Dashboard;
 
 
-},{"./explorer.js":6,"./helpers.js":7}],6:[function(require,module,exports){
+},{"./explorer.js":6,"./helpers.js":8}],6:[function(require,module,exports){
 'use strict';
 
 const helpers = require('./helpers.js');
+const ExplorerForm = require('./explorerForm.js');
 
 class ExplorerComponent {
-  constructor(formData) {
+  constructor(method, title, url, body) {
+    this.data = { method, title, url, body };
     this.explorers = document.querySelector('.Geronimo-explorers');
-    console.log(formData);
-    this.displayExplorer(formData);
+    this.displayExplorer({ method, title, url, body });
   }
 
   displayExplorer(formData) {
-    const explorers= document.querySelector('.Geronimo-explorers'); 
-    const newExplorer = document.createElement('form');
-    newExplorer.setAttribute('name', `explorer-${explorers.length}`);
-    newExplorer.innerHTML = `<p>${formData.title}</p><p>${formData.url}</p><p>${formData.method}</p><p>${formData.body}</p>`;
-    explorers.appendChild(newExplorer);
-  }
+    const explorerList = document.querySelector('.Geronimo-explorers'); 
+    const newExplorer = document.createElement('div');
 
+    const explorerForm = new ExplorerForm(formData.body);
 
-  fetchQuery(data) {
-    const { type, url, body } = data;
-    let request = { method: type };
+    console.log(formData);
 
-    switch(type) {
-      case 'put':
-      case 'post':
-        request['body'] = body || {};
-        break;
-      case 'delete':
-        break;
-    }
+    newExplorer.innerHTML = (`
+      <div class="Geronimo-explorerCard mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h4>${formData.title}</h4>
+          <p>${formData.method}</p>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            ${formData.url}
+          </a>
+          <div class="mdl-layout-spacer"></div>
+          ${explorerForm.getForm()}
+        </div>
+      </div>
+    `);
+    explorerList.appendChild(newExplorer);
 
-    return fetch(url, request).then(res => res.json())
+    const form = document.querySelector('form.Geronimo-explorer-form');
+
+    form.addEventListener("submit", e => {
+      e.stopPropagation();
+      e.preventDefault();
+      const customRequest = {
+        method: formData.method,
+        url: formData.url,
+        body: helpers.serialize(form)
+      };
+
+      helpers.fetchQuery(customRequest).then(response => {
+        console.log(response);
+      });
+    });
   }
 }
 
 module.exports = ExplorerComponent;
 
-},{"./helpers.js":7}],7:[function(require,module,exports){
+},{"./explorerForm.js":7,"./helpers.js":8}],7:[function(require,module,exports){
+'use strict';
+
+class ExplorerForm {
+  constructor(body) {
+    this.form = this.createForm(body);
+    this.getForm = this.getForm.bind(this);
+  }
+
+  getForm() {
+    return this.form;
+  }
+
+  createForm(body) {
+    const newForm = document.createElement('form');
+    newForm.setAttribute('class', 'Geronimo-explorer-form');
+
+    for(let i = 0; i< body.length; i++) {
+      const item = body[i];
+      let inputWrapper = document.createElement('div');
+      inputWrapper.setAttribute('class', 'mdl-textfield mdl-js-textfield mdl-textfield--floating-label');
+
+      let newLabel = document.createElement('label');
+
+      let newInput = document.createElement('input');
+      newInput.setAttribute('class', 'mdl-textfield__input');
+
+      Object.keys(item).map(key => {
+        if (key === 'name') {
+          newLabel.setAttribute('for', item[key]);
+          newLabel.innerHTML = item[key];
+        }
+        newInput.setAttribute(key, item[key]);
+      });
+      
+      inputWrapper.appendChild(newInput);
+      inputWrapper.appendChild(newLabel);
+
+      newForm.appendChild(inputWrapper);
+    }
+
+    let submit = document.createElement('button');
+    submit.setAttribute('class', 'mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent')
+    submit.setAttribute('type', 'submit');
+    submit.innerHTML = 'Execute';
+
+    newForm.appendChild(submit);
+
+    return newForm.outerHTML;
+  }
+}
+
+module.exports = ExplorerForm;
+
+},{}],8:[function(require,module,exports){
 
 const serialize = function(form) {
   let serialized = {};
@@ -1186,7 +1264,11 @@ const serialize = function(form) {
   for(let i = 0; i < form.elements.length; i++){
     const field = form.elements[i];
     if (field.name) {
-      serialized[field.name] = field.value;
+      serialized[field.name] = (
+        field.name === 'body'
+          ? JSON.parse(field.value)
+          : field.value
+        );
     }
   }
 
@@ -1214,7 +1296,7 @@ module.exports = {
   fetchQuery
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 var Dashboard = require('./dashboard.js');
@@ -1231,4 +1313,4 @@ if (!window.Promise) {
   const dashboard = new Dashboard();
 })();
 
-},{"./dashboard.js":5,"promise-polyfill":3,"whatwg-fetch":4}]},{},[8]);
+},{"./dashboard.js":5,"promise-polyfill":3,"whatwg-fetch":4}]},{},[9]);

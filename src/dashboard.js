@@ -16,11 +16,17 @@ class Dashboard {
     e.stopPropagation();
 
     const formData = helpers.serialize(this.form);
-    const newExplorer = new ExplorerComponent(formData);
+      const newExplorer = new ExplorerComponent(
+        formData.method,
+        formData.title,
+        formData.url,
+        formData.body
+      );
+  }
 
-    helpers.fetchQuery(formData).then(data => {
-      console.log(data);
-    });
+  displayResponse(response) {
+    const responseWrapper = document.querySelector('.Geronimo-form-response'); 
+    responseWrapper.innerHTML = JSON.stringify(response);
   }
 }
 
