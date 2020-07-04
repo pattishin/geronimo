@@ -1112,165 +1112,138 @@ module.exports = Promise;
 'use strict';
 
 const helpers = require('./helpers.js');
-const ExplorerComponent = require('./explorer.js');
+const ExplorerList = require('./explorerList.js');
 
+/**
+ * Dashboard
+ * ---------------------
+ */ 
 class Dashboard {
   constructor(title, url, method, body) {
-    this.createExplorers = this.createExplorers.bind(this);
-  
-    this.form1 = document.querySelector('.Geronimo-form1');
-    this.form2 = document.querySelector('.Geronimo-form2');
+    this.render = this.render.bind(this);
+    this.initializeForms = this.initializeForms.bind(this);
+
+    this.initializeForms();
+  }
+
+  initializeForms() {
+    const batchForm = document.querySelector('.Geronimo-form1');
+    const singleForm = document.querySelector('.Geronimo-form2');
     
-    this.form1.addEventListener("submit", e => {
+    batchForm.addEventListener("submit", e => {
       e.preventDefault();
       e.stopPropagation();
-      const formData = helpers.serialize(this.form1);
+      const formData = helpers.serialize(batchForm);
       
-      this.createExplorers(JSON.parse(formData.config)); 
+      this.render(JSON.parse(formData.config)); 
     });
 
-    this.form2.addEventListener("submit", e => {
+    singleForm.addEventListener("submit", e => {
       e.preventDefault();
       e.stopPropagation();
-      const formData = helpers.serialize(this.form2);
+      const formData = helpers.serialize(singleForm);
       
-      this.createExplorers([formData]); 
+      this.render([formData]); 
     });
   }
 
-  createExplorers(configs) {
-    if(configs) {
-      configs.map(config => {
-        new ExplorerComponent(
-          config.method,
-          config.title,
-          config.url,
-          config.body
-        );
-      });
-    }
+  render(configs) {
+    const explorerList = new ExplorerList(configs);
   }
 }
 
 module.exports = Dashboard;
 
 
-},{"./explorer.js":6,"./helpers.js":8}],6:[function(require,module,exports){
+},{"./explorerList.js":8,"./helpers.js":9}],6:[function(require,module,exports){
 'use strict';
 
 const helpers = require('./helpers.js');
 const ExplorerForm = require('./explorerForm.js');
 
+/**
+ * ExplorerComponent
+ * ---------------------
+ */ 
 class ExplorerComponent {
   constructor(method, title, url, body) {
-    this.displayLoader = this.displayLoader.bind(this);
+    this.render = this.render.bind(this);
 
-    this.explorers = document.querySelector('.Geronimo-explorers');
-    this.displayLoader({ method, title, url, body });
+    this.formData = { method, title, url, body };
   }
 
-  displayLoader(formData) {
-    const loader = document.createElement('p');
-    loader.innerHTML = 'Configuring ...';
-
-    this.explorers.appendChild(loader);
-
-    setTimeout(() => this.displayExplorer(formData), 1000);
+  getExplorer() {
+    return this.render();
   }
 
-  displayExplorer(formData) {
-    const explorerList = document.querySelector('.Geronimo-explorers'); 
+  render() {
+    const data = this.formData && this.formData.body;
+    const explorerForm =  new ExplorerForm(data);
+    
     const newExplorer = document.createElement('div');
     newExplorer.setAttribute('class', 'Geronimo-explorerCard');
-    let explorerForm;
-
-    if (formData.body) {
-      explorerForm = new ExplorerForm(formData.body);
-    }
-
-    newExplorer.innerHTML = explorerForm ? (
+    
+    newExplorer.innerHTML = (
       `<div>
-          <h4>${formData.title}</h4>
-          <p>${formData.method}</p>
+          <h4>${this.formData.title}</h4>
+          <p>${this.formData.method}</p>
         </div>
         <div>
-          <a target="blank" src="${formData.url}">
-            ${formData.url}
+          <a target="blank" src="${this.formData.url}">
+            ${this.formData.url}
           </a>
           ${explorerForm.getForm()}
         </div>`
-    ) : (`
-        <div>
-          <h4>${formData.title}</h4>
-          <p>${formData.method}</p>
-        </div>
-        <div>
-          <a target="blank" src="${formData.url}">
-            ${formData.url}
-          </a>
-        </div>`
     );
 
-    explorerList.appendChild(newExplorer);
-
-    const form = document.querySelector('form.Geronimo-explorer-form');
-
-    form.addEventListener("submit", e => {
-      e.stopPropagation();
-      e.preventDefault();
-
-      const customRequest = {
-        method: formData.method,
-        url: formData.url,
-        body: helpers.serialize(form)
-      };
-
-      helpers.fetchQuery(customRequest).then(response => {
-        console.log(response);
-      });
-    });
+    return newExplorer;
   }
 }
 
 module.exports = ExplorerComponent;
 
-},{"./explorerForm.js":7,"./helpers.js":8}],7:[function(require,module,exports){
+},{"./explorerForm.js":7,"./helpers.js":9}],7:[function(require,module,exports){
 'use strict';
 
+/**
+ * ExplorerForm
+ * ---------------------
+ */ 
 class ExplorerForm {
   constructor(body) {
-    this.form = this.createForm(body);
     this.getForm = this.getForm.bind(this);
+    this.form = this.render(body);
   }
 
   getForm() {
-    return this.form;
+    return this.form.outerHTML;
   }
 
-  createForm(body) {
+  render(body) {
     const newForm = document.createElement('form');
-    newForm.setAttribute('class', 'Geronimo-explorer-form');
+    newForm.setAttribute('class', 'Geronimo-explorerForm');
 
-    for(let i = 0; i< body.length; i++) {
-      const item = body[i];
-      let inputWrapper = document.createElement('div');
-      inputWrapper.setAttribute('class', 'Geronimo-form-item');
+    if (body) {
+      body.forEach(item => {
+        let inputWrapper = document.createElement('div');
+        inputWrapper.setAttribute('class', 'Geronimo-form-item');
 
-      let newLabel = document.createElement('label');
-      let newInput = document.createElement('input');
+        let newLabel = document.createElement('label');
+        let newInput = document.createElement('input');
 
-      Object.keys(item).map(key => {
-        if (key === 'name') {
-          newLabel.setAttribute('for', item[key]);
-          newLabel.innerHTML = item[key];
-        }
-        newInput.setAttribute(key, item[key]);
+        Object.keys(item).map(key => {
+          if (key === 'name') {
+            newLabel.setAttribute('for', item[key]);
+            newLabel.innerHTML = item[key];
+          }
+          newInput.setAttribute(key, item[key]);
+        });
+
+        inputWrapper.appendChild(newLabel);
+        inputWrapper.appendChild(newInput);
+
+        newForm.appendChild(inputWrapper);
       });
-      
-      inputWrapper.appendChild(newLabel);
-      inputWrapper.appendChild(newInput);
-
-      newForm.appendChild(inputWrapper);
     }
 
     let submit = document.createElement('button');
@@ -1279,13 +1252,75 @@ class ExplorerForm {
 
     newForm.appendChild(submit);
 
-    return newForm.outerHTML;
+    return newForm;
   }
 }
 
 module.exports = ExplorerForm;
 
 },{}],8:[function(require,module,exports){
+'use strict';
+
+const helpers = require('./helpers.js');
+const ExplorerComponent = require('./explorer.js');
+
+/**
+ * ExplorerList
+ * ---------------------
+ */ 
+class ExplorerList {
+  constructor(configs) {
+    this.render = this.render.bind(this);
+    
+    this.configs = configs;
+    this.explorerList = document.querySelector('.Geronimo-explorers'); 
+
+    this.render();
+  }
+
+  onFormSubmit() {
+    const explorerForms = document.querySelector('form.Geronimo-explorerForm');
+
+    console.log(explorerForms);
+
+    explorerForms.forEach(form => {
+      form.addEventListener("submit", e => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        debugger;
+
+        const customRequest = {
+          method: formData.method,
+          url: formData.url,
+          body: helpers.serialize(form)
+        };
+
+        helpers.fetchQuery(customRequest).then(response => {
+          console.log(response);
+        });
+      });
+    });
+  
+  }
+
+  render() {
+    this.configs.map(config => {
+      const newExplorer = new ExplorerComponent(
+        config.method,
+        config.title,
+        config.url,
+        config.body
+      );
+
+      this.explorerList.appendChild(newExplorer.getExplorer());
+    });
+  }
+}
+
+module.exports = ExplorerList;
+
+},{"./explorer.js":6,"./helpers.js":9}],9:[function(require,module,exports){
 
 const serialize = function(form) {
   let serialized = {};
@@ -1325,7 +1360,7 @@ module.exports = {
   fetchQuery
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 var Dashboard = require('./dashboard.js');
@@ -1342,4 +1377,4 @@ if (!window.Promise) {
   const dashboard = new Dashboard();
 })();
 
-},{"./dashboard.js":5,"promise-polyfill":3,"whatwg-fetch":4}]},{},[9]);
+},{"./dashboard.js":5,"promise-polyfill":3,"whatwg-fetch":4}]},{},[10]);

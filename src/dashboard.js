@@ -1,43 +1,43 @@
 'use strict';
 
 const helpers = require('./helpers.js');
-const ExplorerComponent = require('./explorer.js');
+const ExplorerList = require('./explorerList.js');
 
+/**
+ * Dashboard
+ * ---------------------
+ */ 
 class Dashboard {
   constructor(title, url, method, body) {
-    this.createExplorers = this.createExplorers.bind(this);
-  
-    this.form1 = document.querySelector('.Geronimo-form1');
-    this.form2 = document.querySelector('.Geronimo-form2');
+    this.render = this.render.bind(this);
+    this.initializeForms = this.initializeForms.bind(this);
+
+    this.initializeForms();
+  }
+
+  initializeForms() {
+    const batchForm = document.querySelector('.Geronimo-form1');
+    const singleForm = document.querySelector('.Geronimo-form2');
     
-    this.form1.addEventListener("submit", e => {
+    batchForm.addEventListener("submit", e => {
       e.preventDefault();
       e.stopPropagation();
-      const formData = helpers.serialize(this.form1);
+      const formData = helpers.serialize(batchForm);
       
-      this.createExplorers(JSON.parse(formData.config)); 
+      this.render(JSON.parse(formData.config)); 
     });
 
-    this.form2.addEventListener("submit", e => {
+    singleForm.addEventListener("submit", e => {
       e.preventDefault();
       e.stopPropagation();
-      const formData = helpers.serialize(this.form2);
+      const formData = helpers.serialize(singleForm);
       
-      this.createExplorers([formData]); 
+      this.render([formData]); 
     });
   }
 
-  createExplorers(configs) {
-    if(configs) {
-      configs.map(config => {
-        new ExplorerComponent(
-          config.method,
-          config.title,
-          config.url,
-          config.body
-        );
-      });
-    }
+  render(configs) {
+    const explorerList = new ExplorerList(configs);
   }
 }
 
