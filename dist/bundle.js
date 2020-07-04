@@ -1,4 +1,81 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+'use strict';
+// For more information about browser field, check out the browser field at https://github.com/substack/browserify-handbook#browser-field.
+
+var styleElementsInsertedAtTop = [];
+
+var insertStyleElement = function(styleElement, options) {
+    var head = document.head || document.getElementsByTagName('head')[0];
+    var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+
+    options = options || {};
+    options.insertAt = options.insertAt || 'bottom';
+
+    if (options.insertAt === 'top') {
+        if (!lastStyleElementInsertedAtTop) {
+            head.insertBefore(styleElement, head.firstChild);
+        } else if (lastStyleElementInsertedAtTop.nextSibling) {
+            head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+        } else {
+            head.appendChild(styleElement);
+        }
+        styleElementsInsertedAtTop.push(styleElement);
+    } else if (options.insertAt === 'bottom') {
+        head.appendChild(styleElement);
+    } else {
+        throw new Error('Invalid value for parameter \'insertAt\'. Must be \'top\' or \'bottom\'.');
+    }
+};
+
+module.exports = {
+    // Create a <link> tag with optional data attributes
+    createLink: function(href, attributes) {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var link = document.createElement('link');
+
+        link.href = href;
+        link.rel = 'stylesheet';
+
+        for (var key in attributes) {
+            if ( ! attributes.hasOwnProperty(key)) {
+                continue;
+            }
+            var value = attributes[key];
+            link.setAttribute('data-' + key, value);
+        }
+
+        head.appendChild(link);
+    },
+    // Create a <style> tag with optional data attributes
+    createStyle: function(cssText, attributes, extraOptions) {
+        extraOptions = extraOptions || {};
+
+        var style = document.createElement('style');
+        style.type = 'text/css';
+
+        for (var key in attributes) {
+            if ( ! attributes.hasOwnProperty(key)) {
+                continue;
+            }
+            var value = attributes[key];
+            style.setAttribute('data-' + key, value);
+        }
+
+        if (style.sheet) { // for jsdom and IE9+
+            style.innerHTML = cssText;
+            style.sheet.cssText = cssText;
+            insertStyleElement(style, { insertAt: extraOptions.insertAt });
+        } else if (style.styleSheet) { // for IE8 and below
+            insertStyleElement(style, { insertAt: extraOptions.insertAt });
+            style.styleSheet.cssText = cssText;
+        } else { // for Chrome, Firefox, and Safari
+            style.appendChild(document.createTextNode(cssText));
+            insertStyleElement(style, { insertAt: extraOptions.insertAt });
+        }
+    }
+};
+
+},{}],2:[function(require,module,exports){
 (function (setImmediate,clearImmediate){
 var nextTick = require('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -77,7 +154,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-},{"process/browser.js":2,"timers":1}],2:[function(require,module,exports){
+},{"process/browser.js":3,"timers":2}],3:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -263,7 +340,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function (setImmediate){
 'use strict';
 
@@ -541,7 +618,7 @@ Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
 module.exports = Promise;
 
 }).call(this,require("timers").setImmediate)
-},{"timers":1}],4:[function(require,module,exports){
+},{"timers":2}],5:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -1108,7 +1185,7 @@ module.exports = Promise;
 
 })));
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports=[{
 		"title": "Create new user",
 		"url": "https://jsonplaceholder.typicode.com/users",
@@ -1164,7 +1241,7 @@ module.exports=[{
 	}
 ]
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * @function: fetchQuery
  * @description: Executes given fetch request and returns a promise with response
@@ -1196,7 +1273,7 @@ const fetchQuery = function(data) {
 
 module.exports = { fetchQuery };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * @function: serialize
  * @description: Retrieves all values from given html form
@@ -1219,7 +1296,7 @@ const serialize = function(form) {
 module.exports = { serialize };
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 const formHelpers = require('../../helpers/forms.js');
@@ -1272,7 +1349,7 @@ class Dashboard {
 module.exports = Dashboard;
 
 
-},{"../../examples/batch.json":5,"../../helpers/forms.js":7,"../explorers/explorerList.js":11}],9:[function(require,module,exports){
+},{"../../examples/batch.json":6,"../../helpers/forms.js":8,"../explorers/explorerList.js":12}],10:[function(require,module,exports){
 'use strict';
 
 const ExplorerForm = require('./explorerForm.js');
@@ -1329,7 +1406,7 @@ class ExplorerComponent {
 
 module.exports = ExplorerComponent;
 
-},{"./explorerForm.js":10}],10:[function(require,module,exports){
+},{"./explorerForm.js":11}],11:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1388,7 +1465,7 @@ class ExplorerForm {
 
 module.exports = ExplorerForm;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 const fetchHelpers = require('../../helpers/fetch.js');
@@ -1468,10 +1545,15 @@ class ExplorerList {
 
 module.exports = ExplorerList;
 
-},{"../../helpers/fetch.js":6,"../../helpers/forms.js":7,"./explorer.js":9}],12:[function(require,module,exports){
+},{"../../helpers/fetch.js":7,"../../helpers/forms.js":8,"./explorer.js":10}],13:[function(require,module,exports){
 'use strict';
 
-var Dashboard = require('./dashboard/dashboard.js');
+require('../styles/index.css');
+require('../styles/dashboard.css');
+require('../styles/explorer.css');
+require('../styles/forms.css');
+
+const Dashboard = require('./dashboard/dashboard.js');
 
 // Polyfilling promises and fetch for
 var Promise = require('promise-polyfill');
@@ -1488,4 +1570,12 @@ if (!window.Promise) {
   const dashboard = new Dashboard();
 })();
 
-},{"./dashboard/dashboard.js":8,"promise-polyfill":3,"whatwg-fetch":4}]},{},[12]);
+},{"../styles/dashboard.css":14,"../styles/explorer.css":15,"../styles/forms.css":16,"../styles/index.css":17,"./dashboard/dashboard.js":9,"promise-polyfill":4,"whatwg-fetch":5}],14:[function(require,module,exports){
+var css = "div.Geronimo-container{display:flex;justify-content:center;align-items:center;width:inherit;flex-direction:column}"; (require("browserify-css").createStyle(css, { "href": "src/styles/dashboard.css" }, { "insertAt": "bottom" })); module.exports = css;
+},{"browserify-css":1}],15:[function(require,module,exports){
+var css = "div.Geronimo-explorerList,div.Geronimo-explorerListWrapper{display:flex;width:inherit;flex-direction:column;align-items:center;justify-content:center}div.Geronimo-panelWrapper{display:flex;justify-content:space-between;width:inherit;background-color:#151515;border-radius:5px;margin-bottom:25px;z-index:1}div.Geronimo-explorerCard{display:flex;width:inherit;border:1px solid #24c6e0;border-radius:5px;margin-bottom:10px}div.Geronimo-explorerCardPanel{display:inline-flex;flex-direction:column;align-items:start;margin:20px}div.Geronimo-explorerCardResult{font-size:12px;word-break:break-all;overflow-y:scroll;width:70%;height:200px;border:1px solid;padding:20px;border-radius:5px;background:#000}"; (require("browserify-css").createStyle(css, { "href": "src/styles/explorer.css" }, { "insertAt": "bottom" })); module.exports = css;
+},{"browserify-css":1}],16:[function(require,module,exports){
+var css = "form.Geronimo-form1,form.Geronimo-form2{display:flex;flex-direction:column;width:inherit;border:1px solid;border-radius:5px;padding:20px}form.Geronimo-form1:hover,form.Geronimo-form2:hover{background:#1a2d30}form.Geronimo-form1{margin-right:20px}div.Geronimo-form-item{display:flex;flex-direction:column}form.Geronimo-explorers-form{display:flex!important;flex-direction:column!important;align-items:center!important}"; (require("browserify-css").createStyle(css, { "href": "src/styles/forms.css" }, { "insertAt": "bottom" })); module.exports = css;
+},{"browserify-css":1}],17:[function(require,module,exports){
+var css = "body,html{font-family:\"Bitstream Vera Sans Mono\",monospace;color:#24c6e0!important;background-color:#151515;width:100%;margin:auto;max-width:1080px}body{height:auto}input,select,textarea{font-family:\"Bitstream Vera Sans Mono\",monospace;border:1px solid rgba(21,171,195,.7);border-radius:5px;width:inherit;background-color:#151515;color:#24c6e0;padding:10px;width:inherit;text-shadow:0 0 5px rgba(21,171,195,.7)}label{margin:10px 0}input:focus,select:focus,textarea:focus{outline:0}button{font-family:\"Bitstream Vera Sans Mono\",monospace;border:2px solid #15abc3;border-radius:5px;margin:10px 0;padding:20px;background:0 0;color:#24c6e0}button:hover{border:1px solid #24c6e0;background-color:#24c6e0;box-shadow:0 0 7px #24c6e0}header{display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:25px;border:3px solid #24c6e0;border-radius:15px;box-shadow:0 0 9px #15abc3;margin:15px}h2.Geronimo-subtitle{font-size:15px;font-weight:400}h1.Geronimo-title,h2.Geronimo-subtitle{margin:5px auto}h1.Geronimo-title::after{content:\"\";position:relative;display:inline-flex;background-color:#24c6e0;width:10px;height:31px;left:10px;animation:blink 1s step-end infinite}h2.Geronimo-pathTitle:after,h2.Geronimo-pathTitle:before{content:\"\";display:inline-block;width:130px;height:40px;border:2px solid #24c6e0;position:relative;top:35px;border-bottom:transparent}h2.Geronimo-pathTitle:after{left:50px;border-radius:0 100px;border-left:transparent}h2.Geronimo-pathTitle:before{right:50px;border-radius:100px 0;border-right:transparent}@-webkit-keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}"; (require("browserify-css").createStyle(css, { "href": "src/styles/index.css" }, { "insertAt": "bottom" })); module.exports = css;
+},{"browserify-css":1}]},{},[13]);

@@ -1,5 +1,10 @@
 
+# Modules
 node_modules/
 
+# Temp vim files
 *.swp
 *.swo
+
+# Firebase authentication
+firebase.json
