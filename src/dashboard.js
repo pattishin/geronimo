@@ -31,7 +31,9 @@ class Dashboard {
       e.preventDefault();
       e.stopPropagation();
       const formData = helpers.serialize(singleForm);
-      
+
+      console.log(formData);
+
       this.render([formData]); 
     });
   }

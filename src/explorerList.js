@@ -54,6 +54,8 @@ class ExplorerList {
   }
 
   render() {
+    console.log(this.configs);
+
     this.configs.forEach((config, index) => {
       const { title, method, url, body } = config;
       const formName = `${title}_${url}_${method}`;

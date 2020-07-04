@@ -1142,7 +1142,9 @@ class Dashboard {
       e.preventDefault();
       e.stopPropagation();
       const formData = helpers.serialize(singleForm);
-      
+
+      console.log(formData);
+
       this.render([formData]); 
     });
   }
@@ -1315,6 +1317,8 @@ class ExplorerList {
   }
 
   render() {
+    console.log(this.configs);
+
     this.configs.forEach((config, index) => {
       const { title, method, url, body } = config;
       const formName = `${title}_${url}_${method}`;
@@ -1339,9 +1343,9 @@ const serialize = function(form) {
     const field = form.elements[i];
     if (field.name) {
       serialized[field.name] = (
-        field.name === 'body'
+        field.name === 'body' && field.value
           ? JSON.parse(field.value)
-          : field.value
+          : ''
         );
     }
   }

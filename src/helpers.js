@@ -6,9 +6,9 @@ const serialize = function(form) {
     const field = form.elements[i];
     if (field.name) {
       serialized[field.name] = (
-        field.name === 'body'
+        field.name === 'body' && field.value
           ? JSON.parse(field.value)
-          : field.value
+          : ''
         );
     }
   }
