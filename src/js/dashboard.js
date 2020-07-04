@@ -1,7 +1,7 @@
 'use strict';
 
-const helpers = require('./helpers.js');
-const batchConfig = require('./examples/batch.json');
+const formHelpers = require('../helpers/forms.js');
+const batchConfig = require('../examples/batch.json');
 const ExplorerList = require('./explorerList.js');
 
 /**
@@ -37,7 +37,7 @@ class Dashboard {
       e.stopPropagation();
     }
 
-    const formData = helpers.serialize(isBatch ? this.batchForm: this.singleForm);
+    const formData = formHelpers.serialize(isBatch ? this.batchForm: this.singleForm);
     this.configs = isBatch ? JSON.parse(formData.config) : [ formData ]; 
     this.render();
   }

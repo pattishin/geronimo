@@ -1,6 +1,7 @@
 'use strict';
 
-const helpers = require('./helpers.js');
+const fetchHelpers = require('../helpers/fetch.js');
+const formHelpers = require('../helpers/forms.js');
 const ExplorerComponent = require('./explorer.js');
 
 /**
@@ -41,10 +42,10 @@ class ExplorerList {
     const customRequest = {
       method,
       url,
-      body: body && helpers.serialize(form)
+      body: body && formHelpers.serialize(form)
     };
 
-    helpers.fetchQuery(customRequest).then(response => {
+    fetchHelpers.fetchQuery(customRequest).then(response => {
       form.parentElement.parentElement.nextElementSibling.innerHTML = `<p>${JSON.stringify(response)}</p>`;
     });
   }

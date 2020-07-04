@@ -4,7 +4,7 @@
   "description": "Geronimo API challenge",
   "main": "index.js",
   "scripts": {
-    "build": "browserify src/main.js > public/bundle.js",
+    "build": "browserify src/js/main.js > public/bundle.js",
     "start": "npm run build && python -m SimpleHTTPServer 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

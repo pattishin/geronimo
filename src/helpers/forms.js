@@ -1,4 +1,3 @@
-
 /**
  * @function: serialize
  * @description: Retrieves all values from given html form
@@ -18,22 +17,5 @@ const serialize = function(form) {
   return serialized;
 }
 
-/**
- * @function: fetchQuery
- * @description: Executes given fetch request and returns a promise with response
- */ 
-const fetchQuery = function(data) {
-  const { method, url, body } = data;
-  let request = { method };
+module.exports = { serialize };
 
-  if (method === 'post' || method === 'put') {
-    request['body'] = body || {};
-  }
-
-  return fetch(url, request).then(res => res.json())
-}
-
-module.exports = {
-  serialize,
-  fetchQuery
-};

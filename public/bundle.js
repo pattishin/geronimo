@@ -1109,10 +1109,81 @@ module.exports = Promise;
 })));
 
 },{}],5:[function(require,module,exports){
+module.exports=[{
+  "title": "Create new user",
+  "url": "https://jsonplaceholder.typicode.com/users",
+  "method": "POST",
+  "body": [{
+    "name": "email",
+    "type": "email",
+    "max": 24,
+    "min": 3
+  },
+  {
+    "name": "full-name",
+    "type": "text",
+    "placeholder": "John Doe",
+    "required": true
+  },
+  {
+    "name": "phone",
+    "type": "tel"
+  }
+  ]
+},
+{
+  "title": "Get users",
+  "url": "https://jsonplaceholder.typicode.com/users",
+  "method": "GET"
+}]
+
+
+},{}],6:[function(require,module,exports){
+/**
+ * @function: fetchQuery
+ * @description: Executes given fetch request and returns a promise with response
+ */ 
+const fetchQuery = function(data) {
+  const { method, url, body } = data;
+  let request = { method };
+
+  if (method === 'post' || method === 'put') {
+    request['body'] = body || {};
+  }
+
+  return fetch(url, request).then(res => res.json())
+}
+
+module.exports = { fetchQuery };
+
+},{}],7:[function(require,module,exports){
+/**
+ * @function: serialize
+ * @description: Retrieves all values from given html form
+ */ 
+const serialize = function(form) {
+  let serialized = {};
+
+  for(let i = 0; i < form.elements.length; i++){
+    const field = form.elements[i];
+    if (field.name && field.value) {
+      field.name !== 'body'
+        ? serialized[field.name] = field.value
+        : serialized[field.name] = JSON.parse(field.value);
+    }
+  }
+
+  return serialized;
+}
+
+module.exports = { serialize };
+
+
+},{}],8:[function(require,module,exports){
 'use strict';
 
-const helpers = require('./helpers.js');
-const batchConfig = require('./examples/batch.json');
+const formHelpers = require('../helpers/forms.js');
+const batchConfig = require('../examples/batch.json');
 const ExplorerList = require('./explorerList.js');
 
 /**
@@ -1148,7 +1219,7 @@ class Dashboard {
       e.stopPropagation();
     }
 
-    const formData = helpers.serialize(isBatch ? this.batchForm: this.singleForm);
+    const formData = formHelpers.serialize(isBatch ? this.batchForm: this.singleForm);
     this.configs = isBatch ? JSON.parse(formData.config) : [ formData ]; 
     this.render();
   }
@@ -1161,40 +1232,9 @@ class Dashboard {
 module.exports = Dashboard;
 
 
-},{"./examples/batch.json":6,"./explorerList.js":9,"./helpers.js":10}],6:[function(require,module,exports){
-module.exports=[{
-  "title": "Create new user",
-  "url": "https://jsonplaceholder.typicode.com/users",
-  "method": "POST",
-  "body": [{
-    "name": "email",
-    "type": "email",
-    "max": 24,
-    "min": 3
-  },
-  {
-    "name": "full-name",
-    "type": "text",
-    "placeholder": "John Doe",
-    "required": true
-  },
-  {
-    "name": "phone",
-    "type": "tel"
-  }
-  ]
-},
-{
-  "title": "Get users",
-  "url": "https://jsonplaceholder.typicode.com/users",
-  "method": "GET"
-}]
-
-
-},{}],7:[function(require,module,exports){
+},{"../examples/batch.json":5,"../helpers/forms.js":7,"./explorerList.js":11}],9:[function(require,module,exports){
 'use strict';
 
-const helpers = require('./helpers.js');
 const ExplorerForm = require('./explorerForm.js');
 
 /**
@@ -1249,7 +1289,7 @@ class ExplorerComponent {
 
 module.exports = ExplorerComponent;
 
-},{"./explorerForm.js":8,"./helpers.js":10}],8:[function(require,module,exports){
+},{"./explorerForm.js":10}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1308,10 +1348,11 @@ class ExplorerForm {
 
 module.exports = ExplorerForm;
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
-const helpers = require('./helpers.js');
+const fetchHelpers = require('../helpers/fetch.js');
+const formHelpers = require('../helpers/forms.js');
 const ExplorerComponent = require('./explorer.js');
 
 /**
@@ -1352,10 +1393,10 @@ class ExplorerList {
     const customRequest = {
       method,
       url,
-      body: body && helpers.serialize(form)
+      body: body && formHelpers.serialize(form)
     };
 
-    helpers.fetchQuery(customRequest).then(response => {
+    fetchHelpers.fetchQuery(customRequest).then(response => {
       form.parentElement.parentElement.nextElementSibling.innerHTML = `<p>${JSON.stringify(response)}</p>`;
     });
   }
@@ -1383,48 +1424,7 @@ class ExplorerList {
 
 module.exports = ExplorerList;
 
-},{"./explorer.js":7,"./helpers.js":10}],10:[function(require,module,exports){
-
-/**
- * @function: serialize
- * @description: Retrieves all values from given html form
- */ 
-const serialize = function(form) {
-  let serialized = {};
-
-  for(let i = 0; i < form.elements.length; i++){
-    const field = form.elements[i];
-    if (field.name && field.value) {
-      field.name !== 'body'
-        ? serialized[field.name] = field.value
-        : serialized[field.name] = JSON.parse(field.value);
-    }
-  }
-
-  return serialized;
-}
-
-/**
- * @function: fetchQuery
- * @description: Executes given fetch request and returns a promise with response
- */ 
-const fetchQuery = function(data) {
-  const { method, url, body } = data;
-  let request = { method };
-
-  if (method === 'post' || method === 'put') {
-    request['body'] = body || {};
-  }
-
-  return fetch(url, request).then(res => res.json())
-}
-
-module.exports = {
-  serialize,
-  fetchQuery
-};
-
-},{}],11:[function(require,module,exports){
+},{"../helpers/fetch.js":6,"../helpers/forms.js":7,"./explorer.js":9}],12:[function(require,module,exports){
 'use strict';
 
 var Dashboard = require('./dashboard.js');
@@ -1444,4 +1444,4 @@ if (!window.Promise) {
   const dashboard = new Dashboard();
 })();
 
-},{"./dashboard.js":5,"promise-polyfill":3,"whatwg-fetch":4}]},{},[11]);
+},{"./dashboard.js":8,"promise-polyfill":3,"whatwg-fetch":4}]},{},[12]);

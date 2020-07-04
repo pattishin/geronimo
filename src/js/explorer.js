@@ -1,6 +1,5 @@
 'use strict';
 
-const helpers = require('./helpers.js');
 const ExplorerForm = require('./explorerForm.js');
 
 /**
