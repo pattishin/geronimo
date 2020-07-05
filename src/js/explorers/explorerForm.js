@@ -67,7 +67,7 @@ class ExplorerForm {
     // Create & attach submit button
     let submitButton = document.createElement('button');
     submitButton.setAttribute('type', 'submit');
-    submitButton.innerHTML = 'Execute';
+    submitButton.innerHTML = 'Send Request';
 
     newForm.appendChild(submitButton);
 

@@ -1,7 +1,8 @@
 'use strict';
 
 const formHelpers = require('../../helpers/forms.js');
-const batchConfig = require('../../examples/batch.json');
+const batchConfig1 = require('../../examples/batch1.json');
+const batchConfig2 = require('../../examples/batch2.json');
 const ExplorerList = require('../explorers/explorerList.js');
 
 /**
@@ -19,6 +20,7 @@ class Dashboard {
   constructor() {
     // Binding to maintain "this" reference
     this.initForms = this.initForms.bind(this);
+    this.initForChallenge = this.initForChallenge.bind(this);
     this.displyExplorerList = this.displayExplorerList.bind(this);
 
     // Grab form elements (top forms on page)
@@ -26,15 +28,26 @@ class Dashboard {
     this.singleForm = document.querySelector('form.Geronimo-form2');
 
     this.initForms();
+  
+    // For this challenge! (hello!)
+    this.initForChallenge();
   }
  
+  /**
+   * Initializing explorer list with required 
+   * config for coding challenge
+   */ 
+  initForChallenge() {
+    this.displayExplorerList(batchConfig2);
+  }
+
   /**
    * @method initForms
    * @description Sets up listeners for batch/ single form submissions
    */ 
   initForms() {
     // Pre-populate batch form text area with example json
-    this.batchForm.querySelector('textarea').innerHTML =  JSON.stringify(batchConfig);
+    this.batchForm.querySelector('textarea').innerHTML =  JSON.stringify(batchConfig1);
 
     // Attach callback fn on form submission
     this.batchForm.addEventListener("submit", e => this.onFormSubmit(e, true));

@@ -7,7 +7,8 @@ const ExplorerComponent = require('./explorer.js');
 /**
  * ExplorerList
  * ---------------------
- * Controller class for all created Explorer classes
+ * Controller class for all created Explorer component/ cards
+ * & displays them in a single list
  */
 class ExplorerList {
   /**
@@ -52,8 +53,9 @@ class ExplorerList {
     // Execute query and pass relevant body values
     // & display response from fetch call
     fetchHelpers.fetchQuery(customRequest)
-      .then(response => explorerCardResult.innerHTML = `<p>${JSON.stringify(response)}</p>`)
-      .catch(err => explorerCarResult.innerHTML = `<p>${JSON.stringify(err)}</p>`);
+      .then(res => res.json())
+      .then(json => explorerCardResult.innerHTML = `<p>${JSON.stringify(json)}</p>`)
+      .catch(err => explorerCardResult.innerHTML = `<p>ERROR: ${JSON.stringify(err)}</p>`);
   }
 
   /**

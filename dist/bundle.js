@@ -1242,6 +1242,31 @@ module.exports=[{
 ]
 
 },{}],7:[function(require,module,exports){
+module.exports=[{
+	"title": "Add new user",
+	"url": "https://jsonplaceholder.typicode.com/users",
+	"method": "POST",
+	"body": [{
+			"name": "email",
+			"type": "email",
+			"maxlength": 24,
+			"minlength": 3
+		},
+		{
+			"name": "full-name",
+			"type": "text",
+			"placeholder": "John Doe",
+			"required": true
+		},
+		{
+			"name": "phone",
+			"type": "tel",
+			"pattern": "[0-9]{3}-[0-9]{3}-[0-9]{4}"
+		}
+	]
+}]
+
+},{}],8:[function(require,module,exports){
 /**
  * @function: fetchQuery
  * @description: Executes given fetch request and returns a promise with response
@@ -1253,27 +1278,43 @@ const fetchQuery = function(data) {
 
   let url = data.url;
   
+  // Handle POST request
   if (data.method === 'POST') {
+    // Throw error if body object is missing
+    if (!data.body) {
+      return Promise.reject('Parameter is missing.');
+    }
+    
     request['body'] = data.body || {};
   }
-
-  //TODO: Throw error if no given no json or id
+ 
+  // Handle PUT request
   if (data.method === 'PUT') {
+    // Throw error if id is missing
+    if (!data.body.id) {
+      return Promise.reject('Parameter is missing.');
+    }
+    
     url = `${data.url}/${data.body.id}`;
     request['body'] = data.body || {};
   }
   
-  //TODO: Throw error if no given no id
+  // Handle DELETE request
   if (data.method === 'DELETE') {
+    // Throw error if id is missing
+    if (!data.body.id) {
+      return Promise.reject('Parameter is missing.');
+    }
+    
     url = `${data.url}/${data.body.id}`;
   }
 
-  return fetch(url, request).then(res => res.json())
+  return fetch(url, request);
 }
 
 module.exports = { fetchQuery };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * @function: serialize
  * @description: Retrieves all values from given html form
@@ -1296,11 +1337,12 @@ const serialize = function(form) {
 module.exports = { serialize };
 
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 const formHelpers = require('../../helpers/forms.js');
-const batchConfig = require('../../examples/batch.json');
+const batchConfig1 = require('../../examples/batch1.json');
+const batchConfig2 = require('../../examples/batch2.json');
 const ExplorerList = require('../explorers/explorerList.js');
 
 /**
@@ -1318,6 +1360,7 @@ class Dashboard {
   constructor() {
     // Binding to maintain "this" reference
     this.initForms = this.initForms.bind(this);
+    this.initForChallenge = this.initForChallenge.bind(this);
     this.displyExplorerList = this.displayExplorerList.bind(this);
 
     // Grab form elements (top forms on page)
@@ -1325,15 +1368,26 @@ class Dashboard {
     this.singleForm = document.querySelector('form.Geronimo-form2');
 
     this.initForms();
+  
+    // For this challenge! (hello!)
+    this.initForChallenge();
   }
  
+  /**
+   * Initializing explorer list with required 
+   * config for coding challenge
+   */ 
+  initForChallenge() {
+    this.displayExplorerList(batchConfig2);
+  }
+
   /**
    * @method initForms
    * @description Sets up listeners for batch/ single form submissions
    */ 
   initForms() {
     // Pre-populate batch form text area with example json
-    this.batchForm.querySelector('textarea').innerHTML =  JSON.stringify(batchConfig);
+    this.batchForm.querySelector('textarea').innerHTML =  JSON.stringify(batchConfig1);
 
     // Attach callback fn on form submission
     this.batchForm.addEventListener("submit", e => this.onFormSubmit(e, true));
@@ -1373,7 +1427,7 @@ class Dashboard {
 module.exports = Dashboard;
 
 
-},{"../../examples/batch.json":6,"../../helpers/forms.js":8,"../explorers/explorerList.js":12}],10:[function(require,module,exports){
+},{"../../examples/batch1.json":6,"../../examples/batch2.json":7,"../../helpers/forms.js":9,"../explorers/explorerList.js":13}],11:[function(require,module,exports){
 'use strict';
 
 const ExplorerForm = require('./explorerForm.js');
@@ -1447,7 +1501,7 @@ class ExplorerComponent {
 
 module.exports = ExplorerComponent;
 
-},{"./explorerForm.js":11}],11:[function(require,module,exports){
+},{"./explorerForm.js":12}],12:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1517,7 +1571,7 @@ class ExplorerForm {
     // Create & attach submit button
     let submitButton = document.createElement('button');
     submitButton.setAttribute('type', 'submit');
-    submitButton.innerHTML = 'Execute';
+    submitButton.innerHTML = 'Send Request';
 
     newForm.appendChild(submitButton);
 
@@ -1527,7 +1581,7 @@ class ExplorerForm {
 
 module.exports = ExplorerForm;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 const fetchHelpers = require('../../helpers/fetch.js');
@@ -1537,7 +1591,8 @@ const ExplorerComponent = require('./explorer.js');
 /**
  * ExplorerList
  * ---------------------
- * Controller class for all created Explorer classes
+ * Controller class for all created Explorer component/ cards
+ * & displays them in a single list
  */
 class ExplorerList {
   /**
@@ -1582,8 +1637,9 @@ class ExplorerList {
     // Execute query and pass relevant body values
     // & display response from fetch call
     fetchHelpers.fetchQuery(customRequest)
-      .then(response => explorerCardResult.innerHTML = `<p>${JSON.stringify(response)}</p>`)
-      .catch(err => explorerCarResult.innerHTML = `<p>${JSON.stringify(err)}</p>`);
+      .then(res => res.json())
+      .then(json => explorerCardResult.innerHTML = `<p>${JSON.stringify(json)}</p>`)
+      .catch(err => explorerCardResult.innerHTML = `<p>ERROR: ${JSON.stringify(err)}</p>`);
   }
 
   /**
@@ -1618,7 +1674,7 @@ class ExplorerList {
 
 module.exports = ExplorerList;
 
-},{"../../helpers/fetch.js":7,"../../helpers/forms.js":8,"./explorer.js":10}],13:[function(require,module,exports){
+},{"../../helpers/fetch.js":8,"../../helpers/forms.js":9,"./explorer.js":11}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1646,12 +1702,12 @@ if (!window.Promise) {
   const dashboard = new Dashboard();
 })();
 
-},{"../styles/dashboard.css":14,"../styles/explorer.css":15,"../styles/forms.css":16,"../styles/index.css":17,"./dashboard/dashboard.js":9,"promise-polyfill":4,"whatwg-fetch":5}],14:[function(require,module,exports){
+},{"../styles/dashboard.css":15,"../styles/explorer.css":16,"../styles/forms.css":17,"../styles/index.css":18,"./dashboard/dashboard.js":10,"promise-polyfill":4,"whatwg-fetch":5}],15:[function(require,module,exports){
 var css = "div.Geronimo-container{display:flex;justify-content:center;align-items:center;width:inherit;flex-direction:column}"; (require("browserify-css").createStyle(css, { "href": "src/styles/dashboard.css" }, { "insertAt": "bottom" })); module.exports = css;
-},{"browserify-css":1}],15:[function(require,module,exports){
-var css = "div.Geronimo-explorerList,div.Geronimo-explorerListWrapper{display:flex;width:inherit;flex-direction:column;align-items:center;justify-content:center}div.Geronimo-panelWrapper{display:flex;justify-content:space-between;width:inherit;background-color:#151515;border-radius:5px;margin-bottom:25px;z-index:1}div.Geronimo-explorerCard{display:flex;width:inherit;border:1px solid #24c6e0;border-radius:5px;margin-bottom:10px}div.Geronimo-explorerCardPanel{display:inline-flex;flex-direction:column;align-items:start;margin:20px}div.Geronimo-explorerCardResult{font-size:12px;word-break:break-all;overflow-y:scroll;width:inherit;border:1px solid;padding:20px;border-radius:5px;background:#000}"; (require("browserify-css").createStyle(css, { "href": "src/styles/explorer.css" }, { "insertAt": "bottom" })); module.exports = css;
 },{"browserify-css":1}],16:[function(require,module,exports){
-var css = "form.Geronimo-form1,form.Geronimo-form2{display:flex;flex-direction:column;width:inherit;border:1px solid;border-radius:5px;padding:20px}form.Geronimo-form1:hover,form.Geronimo-form2:hover{background:#1a2d30}form.Geronimo-form1{margin-right:20px}div.Geronimo-form-item{display:flex;flex-direction:column}form.Geronimo-explorers-form{display:flex!important;flex-direction:column!important;align-items:center!important}"; (require("browserify-css").createStyle(css, { "href": "src/styles/forms.css" }, { "insertAt": "bottom" })); module.exports = css;
+var css = "div.Geronimo-explorerList,div.Geronimo-explorerListWrapper{display:flex;width:inherit;flex-direction:column;align-items:center;justify-content:center}div.Geronimo-panelWrapper{display:flex;justify-content:space-between;width:inherit;background-color:#151515;border-radius:5px;margin-bottom:25px;z-index:1}div.Geronimo-explorerCard{display:flex;width:inherit;border:1px solid #24c6e0;border-radius:5px;margin-bottom:10px}div.Geronimo-explorerCardPanel{display:inline-flex;flex-direction:column;align-items:start;margin:20px}div.Geronimo-explorerCardResult{font-size:12px;word-break:break-all;overflow-y:scroll;width:inherit;border:1px solid;padding:20px;border-radius:5px;background:#000}"; (require("browserify-css").createStyle(css, { "href": "src/styles/explorer.css" }, { "insertAt": "bottom" })); module.exports = css;
 },{"browserify-css":1}],17:[function(require,module,exports){
+var css = "form.Geronimo-form1,form.Geronimo-form2{display:flex;flex-direction:column;width:inherit;border:1px solid;border-radius:5px;padding:20px}form.Geronimo-form1:hover,form.Geronimo-form2:hover{background:#1a2d30}form.Geronimo-form1{margin-right:20px}div.Geronimo-form-item{display:flex;flex-direction:column}form.Geronimo-explorers-form{display:flex!important;flex-direction:column!important;align-items:center!important}"; (require("browserify-css").createStyle(css, { "href": "src/styles/forms.css" }, { "insertAt": "bottom" })); module.exports = css;
+},{"browserify-css":1}],18:[function(require,module,exports){
 var css = "body,html{font-family:\"Bitstream Vera Sans Mono\",monospace;color:#24c6e0!important;background-color:#151515;width:100%;margin:auto;max-width:1080px}body{height:auto}input,select,textarea{font-family:\"Bitstream Vera Sans Mono\",monospace;border:1px solid rgba(21,171,195,.7);border-radius:5px;width:inherit;background-color:#151515;color:#24c6e0;padding:10px;width:inherit;text-shadow:0 0 5px rgba(21,171,195,.7)}label{margin:10px 0}input:focus,select:focus,textarea:focus{outline:0}button{cursor:pointer;font-family:\"Bitstream Vera Sans Mono\",monospace;border:2px solid #15abc3;border-radius:5px;margin:10px 0;padding:20px;background:0 0;color:#24c6e0}button:hover{color:#000;background-color:#24c6e0;box-shadow:0 0 7px #24c6e0}header{display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:25px;border:3px solid #24c6e0;border-radius:15px;box-shadow:0 0 9px #15abc3;margin:15px}h2.Geronimo-subtitle{font-size:15px;font-weight:400}h1.Geronimo-title,h2.Geronimo-subtitle{margin:5px auto}h1.Geronimo-title::after{content:\"\";position:relative;display:inline-flex;background-color:#24c6e0;width:10px;height:31px;left:10px;animation:blink 1s step-end infinite}h2.Geronimo-pathTitle:after,h2.Geronimo-pathTitle:before{content:\"\";display:inline-block;width:130px;height:40px;border:2px solid #24c6e0;position:relative;top:35px;border-bottom:transparent}h2.Geronimo-pathTitle:after{left:50px;border-radius:0 100px;border-left:transparent}h2.Geronimo-pathTitle:before{right:50px;border-radius:100px 0;border-right:transparent}@-webkit-keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}"; (require("browserify-css").createStyle(css, { "href": "src/styles/index.css" }, { "insertAt": "bottom" })); module.exports = css;
-},{"browserify-css":1}]},{},[13]);
+},{"browserify-css":1}]},{},[14]);

@@ -7,7 +7,20 @@
 Geronimo is built with Vanilla JS and hosted with <a href="https://cloud.google.com/appengine" target="_blank">Google Cloud App Engine</a>
 </p>
 
-## ⚙️  Getting started
+## 💻 Using the app
+
+1. Adding a new API Explorer via the batch method. You can check out the `examples` folder.
+   ```sh
+   [{
+		"title": "Get users",
+		"url": "https://jsonplaceholder.typicode.com/users",
+		"method": "GET"
+	}]
+   ```
+
+2. Add new API Explorer one at a time with the single form  method.
+
+## ⚙️  Getting started with development
 
 1. Install dependencies
 
