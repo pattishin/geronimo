@@ -1310,26 +1310,42 @@ const ExplorerList = require('../explorers/explorerList.js');
  * and the API explorer list (and related forms)
  */ 
 class Dashboard {
+  /**
+   * @method constructor
+   * @description Save references to batch/single form elements
+   * and add form callbacks (initForms)
+   */ 
   constructor() {
-    this.render = this.render.bind(this);
-    this.initializeForms = this.initializeForms.bind(this);
+    // Binding to maintain "this" reference
+    this.initForms = this.initForms.bind(this);
+    this.displyExplorerList = this.displayExplorerList.bind(this);
 
+    // Grab form elements (top forms on page)
     this.batchForm = document.querySelector('form.Geronimo-form1');
     this.singleForm = document.querySelector('form.Geronimo-form2');
 
-    // Set up listeners for batch/ single form submissions
-    this.initializeForms();
-    this.configs = [];
+    this.initForms();
   }
-  
-  initializeForms() {
+ 
+  /**
+   * @method initForms
+   * @description Sets up listeners for batch/ single form submissions
+   */ 
+  initForms() {
     // Pre-populate batch form text area with example json
     this.batchForm.querySelector('textarea').innerHTML =  JSON.stringify(batchConfig);
 
+    // Attach callback fn on form submission
     this.batchForm.addEventListener("submit", e => this.onFormSubmit(e, true));
     this.singleForm.addEventListener("submit", e => this.onFormSubmit(e, false));
   }
 
+  /**
+   * @method onFormSubmit
+   * @param e: event object passed to callback
+   * @param isBatch: boolen if form is for batch form submission
+   * @description Callback that populates configs list to create explorer cards
+   */ 
   onFormSubmit(e, isBatch) {
     if (e) {
       e.preventDefault();
@@ -1337,12 +1353,20 @@ class Dashboard {
     }
 
     const formData = formHelpers.serialize(isBatch ? this.batchForm: this.singleForm);
-    this.configs = isBatch ? JSON.parse(formData.config) : [ formData ]; 
-    this.render();
+    const configs = isBatch ? JSON.parse(formData.config) : [ formData ];
+
+    this.displayExplorerList(configs);
   }
 
-  render() {
-    return new ExplorerList(this.configs);
+  /**
+   * @method displayExplorerList
+   * @param configs: array of explorer objects to display in list
+   * @description Simply initializes ExplorerList class which, in turn, creates ExplorerComponets/Cards
+   */ 
+  displayExplorerList(configs) {
+    this.explorerList = new ExplorerList(configs);
+  
+    return this.explorerList;
   }
 }
 
@@ -1357,30 +1381,47 @@ const ExplorerForm = require('./explorerForm.js');
 /**
  * ExplorerComponent
  * ---------------------
+ * Card displaying the title, base url, and
+ * body form (if POST / PUT metho).
+ * Displays form response of form created out of "body".
  */ 
 class ExplorerComponent {
   /**
    * @method constructor
-   * @param title - title of API explorer item
-   * @param url - base url to execute query
-   * @param method - method (GET, POST, PUT, DELETE) for query
-   * @param body - body to submit in query
+   * @param title: title of API explorer item
+   * @param url: base url to execute query
+   * @param method: method (GET, POST, PUT, DELETE) for query
+   * @param body: array list of form fields to respond when this query is executed
    */ 
   constructor(method, title, url, body) {
-    this.formName = `${title}_${url}_${method}`;
-    this.formData = { method, title, url, body };
-    
+    // Binding to maintain "this" reference
     this.getElement = this.getElement.bind(this);
-    this.render = this.render.bind(this);
+    this.createElement = this.createElement.bind(this);
+    
+    // This explorer component/ card's form name
+    this.formName = `${title}_${url}_${method}`;
+    this.formData = { method, title, url, body }
   }
 
+  /**
+   * @method getElement
+   * @description Return created html element of explorer component/card
+   */ 
   getElement() {
-    return this.render();
+    return this.createElement();
   }
 
-  render() {
+  /**
+   * @method createElement
+   * @description Creates new dom element to represent explorer component
+   * and initializes explorer form element to render within element
+   */ 
+  createElement() {
     const { title, url, body, method } = this.formData;
+    // Initialize explorer form to append to card / component
     const explorerForm =  new ExplorerForm(this.formName, body);
+    
+    // Create explorer element wrapper
     const newExplorer = document.createElement('div');
     newExplorer.setAttribute('class', 'Geronimo-explorerCard');
     
@@ -1412,33 +1453,53 @@ module.exports = ExplorerComponent;
 /**
  * ExplorerForm
  * ---------------------
+ * Form created from given fields ("body") 
+ * to produce object to submit to relevant query
  */ 
 class ExplorerForm {
+  /**
+   * @method constructor
+   * @param name: this explorer form name
+   * @param body: fields of this form to submit this query
+   */ 
   constructor(name, body) {
     this.name = name;
     this.fields = body;
 
+    // Binding to maintain "this" referenc
     this.getElement = this.getElement.bind(this);
+    this.createElement = this.createElement.bind(this);
   }
 
+  /**
+   * @method getElement
+   * @description Return created html element of explorer form
+   */ 
   getElement() {
-    return this.render();
+    return this.createElement();
   }
 
-  render() {
+  /**
+   * @method createElement
+   * @description Creates new dom element to represent explorer form element
+   */ 
+  createElement() {
     const newForm = document.createElement('form');
     newForm.setAttribute('name', this.name);
     newForm.setAttribute('class', 'Geronimo-explorerForm');
 
+    // If we have fields for the form, dynamically create the input elements
     if (this.fields) {
       this.fields.forEach(item => {
         let inputWrapper = document.createElement('div');
-        inputWrapper.setAttribute('class', 'Geronimo-form-item');
-
         let newLabel = document.createElement('label');
         let newInput = document.createElement('input');
 
+        inputWrapper.setAttribute('class', 'Geronimo-form-item');
+
+        // Dynamically add in attributes for each input
         Object.keys(item).map(key => {
+          // Only add in fields if "name" property is available
           if (key === 'name') {
             newLabel.setAttribute('for', item[key]);
             newLabel.innerHTML = item[key];
@@ -1453,6 +1514,7 @@ class ExplorerForm {
       });
     }
 
+    // Create & attach submit button
     let submitButton = document.createElement('button');
     submitButton.setAttribute('type', 'submit');
     submitButton.innerHTML = 'Execute';
@@ -1507,38 +1569,49 @@ class ExplorerList {
     }
 
     const { method, url, body } = this.explorerListMap[form.name];
-    const customRequest = {
-      method,
-      url,
-      body: body && formHelpers.serialize(form)
-    };
+    const serializedForm = body && formHelpers.serialize(form);
+    const customRequest = { method, url, body: serializedForm };
 
-    fetchHelpers.fetchQuery(customRequest).then(response => {
-      form.parentElement.parentElement.nextElementSibling.innerHTML = `<p>${JSON.stringify(response)}</p>`;
-    });
+    const explorerCardResult = (
+      form
+        .parentElement
+        .parentElement
+        .nextElementSibling
+    );
+
+    // Execute query and pass relevant body values
+    // & display response from fetch call
+    fetchHelpers.fetchQuery(customRequest)
+      .then(response => explorerCardResult.innerHTML = `<p>${JSON.stringify(response)}</p>`)
+      .catch(err => explorerCarResult.innerHTML = `<p>${JSON.stringify(err)}</p>`);
   }
 
   /**
    * @method main
    */ 
   main() {
-    this.configs && this.configs.forEach((config, index) => {
-      const formName = `${config.title}_${config.url}_${config.method}`;
-      const newExplorer = new ExplorerComponent(
-        config.method,
-        config.title,
-        config.url,
-        config.body
-      );
+    // If we have the explorer json objects from 
+    // batch form/ single form (check out Dashboard)
+    if (this.configs) {
+      this.configs.forEach((config, index) => {
+        const formName = `${config.title}_${config.url}_${config.method}`;
+        const newExplorer = new ExplorerComponent(config.method, config.title, config.url, config.body);
+        
+        // Initialize explorer list map array, to later use
+        // to match selected forms with their relevant config objects
+        this.explorerListMap[formName] = config;
 
-      this.explorerListMap[formName] = config;
-      this.explorerEmptyList.setAttribute('style', 'display: none');
-      this.explorerList.appendChild(newExplorer.getElement());
-    });
+        // Hide "empty list" label
+        this.explorerEmptyList.setAttribute('style', 'display: none');
+        // Add explorer component/card to list
+        this.explorerList.appendChild(newExplorer.getElement());
+      });
+    }
 
+    // Grab all explorer forms (forms in explorer component/ card)
     const explorerForms = document.querySelectorAll('form.Geronimo-explorerForm');
 
-    // Listens for form submissions from Explorer items
+    // Add callback for form submissions
     explorerForms.forEach(form => form.addEventListener("submit", e => this.onFormSubmit(e, form)));
   }
 }
@@ -1548,6 +1621,9 @@ module.exports = ExplorerList;
 },{"../../helpers/fetch.js":7,"../../helpers/forms.js":8,"./explorer.js":10}],13:[function(require,module,exports){
 'use strict';
 
+/**
+ * Importing app styles
+ */ 
 require('../styles/index.css');
 require('../styles/dashboard.css');
 require('../styles/explorer.css');
@@ -1555,7 +1631,7 @@ require('../styles/forms.css');
 
 const Dashboard = require('./dashboard/dashboard.js');
 
-// Polyfilling promises and fetch for
+// Polyfilling promises and fetch
 var Promise = require('promise-polyfill');
 require("whatwg-fetch");
 
@@ -1564,7 +1640,7 @@ if (!window.Promise) {
 }
 
 /**
- * Initialize the application!
+ * Initialize the dashboard!
  */ 
 (function main() {
   const dashboard = new Dashboard();
@@ -1573,9 +1649,9 @@ if (!window.Promise) {
 },{"../styles/dashboard.css":14,"../styles/explorer.css":15,"../styles/forms.css":16,"../styles/index.css":17,"./dashboard/dashboard.js":9,"promise-polyfill":4,"whatwg-fetch":5}],14:[function(require,module,exports){
 var css = "div.Geronimo-container{display:flex;justify-content:center;align-items:center;width:inherit;flex-direction:column}"; (require("browserify-css").createStyle(css, { "href": "src/styles/dashboard.css" }, { "insertAt": "bottom" })); module.exports = css;
 },{"browserify-css":1}],15:[function(require,module,exports){
-var css = "div.Geronimo-explorerList,div.Geronimo-explorerListWrapper{display:flex;width:inherit;flex-direction:column;align-items:center;justify-content:center}div.Geronimo-panelWrapper{display:flex;justify-content:space-between;width:inherit;background-color:#151515;border-radius:5px;margin-bottom:25px;z-index:1}div.Geronimo-explorerCard{display:flex;width:inherit;border:1px solid #24c6e0;border-radius:5px;margin-bottom:10px}div.Geronimo-explorerCardPanel{display:inline-flex;flex-direction:column;align-items:start;margin:20px}div.Geronimo-explorerCardResult{font-size:12px;word-break:break-all;overflow-y:scroll;width:70%;height:200px;border:1px solid;padding:20px;border-radius:5px;background:#000}"; (require("browserify-css").createStyle(css, { "href": "src/styles/explorer.css" }, { "insertAt": "bottom" })); module.exports = css;
+var css = "div.Geronimo-explorerList,div.Geronimo-explorerListWrapper{display:flex;width:inherit;flex-direction:column;align-items:center;justify-content:center}div.Geronimo-panelWrapper{display:flex;justify-content:space-between;width:inherit;background-color:#151515;border-radius:5px;margin-bottom:25px;z-index:1}div.Geronimo-explorerCard{display:flex;width:inherit;border:1px solid #24c6e0;border-radius:5px;margin-bottom:10px}div.Geronimo-explorerCardPanel{display:inline-flex;flex-direction:column;align-items:start;margin:20px}div.Geronimo-explorerCardResult{font-size:12px;word-break:break-all;overflow-y:scroll;width:inherit;border:1px solid;padding:20px;border-radius:5px;background:#000}"; (require("browserify-css").createStyle(css, { "href": "src/styles/explorer.css" }, { "insertAt": "bottom" })); module.exports = css;
 },{"browserify-css":1}],16:[function(require,module,exports){
 var css = "form.Geronimo-form1,form.Geronimo-form2{display:flex;flex-direction:column;width:inherit;border:1px solid;border-radius:5px;padding:20px}form.Geronimo-form1:hover,form.Geronimo-form2:hover{background:#1a2d30}form.Geronimo-form1{margin-right:20px}div.Geronimo-form-item{display:flex;flex-direction:column}form.Geronimo-explorers-form{display:flex!important;flex-direction:column!important;align-items:center!important}"; (require("browserify-css").createStyle(css, { "href": "src/styles/forms.css" }, { "insertAt": "bottom" })); module.exports = css;
 },{"browserify-css":1}],17:[function(require,module,exports){
-var css = "body,html{font-family:\"Bitstream Vera Sans Mono\",monospace;color:#24c6e0!important;background-color:#151515;width:100%;margin:auto;max-width:1080px}body{height:auto}input,select,textarea{font-family:\"Bitstream Vera Sans Mono\",monospace;border:1px solid rgba(21,171,195,.7);border-radius:5px;width:inherit;background-color:#151515;color:#24c6e0;padding:10px;width:inherit;text-shadow:0 0 5px rgba(21,171,195,.7)}label{margin:10px 0}input:focus,select:focus,textarea:focus{outline:0}button{font-family:\"Bitstream Vera Sans Mono\",monospace;border:2px solid #15abc3;border-radius:5px;margin:10px 0;padding:20px;background:0 0;color:#24c6e0}button:hover{border:1px solid #24c6e0;background-color:#24c6e0;box-shadow:0 0 7px #24c6e0}header{display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:25px;border:3px solid #24c6e0;border-radius:15px;box-shadow:0 0 9px #15abc3;margin:15px}h2.Geronimo-subtitle{font-size:15px;font-weight:400}h1.Geronimo-title,h2.Geronimo-subtitle{margin:5px auto}h1.Geronimo-title::after{content:\"\";position:relative;display:inline-flex;background-color:#24c6e0;width:10px;height:31px;left:10px;animation:blink 1s step-end infinite}h2.Geronimo-pathTitle:after,h2.Geronimo-pathTitle:before{content:\"\";display:inline-block;width:130px;height:40px;border:2px solid #24c6e0;position:relative;top:35px;border-bottom:transparent}h2.Geronimo-pathTitle:after{left:50px;border-radius:0 100px;border-left:transparent}h2.Geronimo-pathTitle:before{right:50px;border-radius:100px 0;border-right:transparent}@-webkit-keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}"; (require("browserify-css").createStyle(css, { "href": "src/styles/index.css" }, { "insertAt": "bottom" })); module.exports = css;
+var css = "body,html{font-family:\"Bitstream Vera Sans Mono\",monospace;color:#24c6e0!important;background-color:#151515;width:100%;margin:auto;max-width:1080px}body{height:auto}input,select,textarea{font-family:\"Bitstream Vera Sans Mono\",monospace;border:1px solid rgba(21,171,195,.7);border-radius:5px;width:inherit;background-color:#151515;color:#24c6e0;padding:10px;width:inherit;text-shadow:0 0 5px rgba(21,171,195,.7)}label{margin:10px 0}input:focus,select:focus,textarea:focus{outline:0}button{cursor:pointer;font-family:\"Bitstream Vera Sans Mono\",monospace;border:2px solid #15abc3;border-radius:5px;margin:10px 0;padding:20px;background:0 0;color:#24c6e0}button:hover{color:#000;background-color:#24c6e0;box-shadow:0 0 7px #24c6e0}header{display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:25px;border:3px solid #24c6e0;border-radius:15px;box-shadow:0 0 9px #15abc3;margin:15px}h2.Geronimo-subtitle{font-size:15px;font-weight:400}h1.Geronimo-title,h2.Geronimo-subtitle{margin:5px auto}h1.Geronimo-title::after{content:\"\";position:relative;display:inline-flex;background-color:#24c6e0;width:10px;height:31px;left:10px;animation:blink 1s step-end infinite}h2.Geronimo-pathTitle:after,h2.Geronimo-pathTitle:before{content:\"\";display:inline-block;width:130px;height:40px;border:2px solid #24c6e0;position:relative;top:35px;border-bottom:transparent}h2.Geronimo-pathTitle:after{left:50px;border-radius:0 100px;border-left:transparent}h2.Geronimo-pathTitle:before{right:50px;border-radius:100px 0;border-right:transparent}@-webkit-keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}@keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:1}}"; (require("browserify-css").createStyle(css, { "href": "src/styles/index.css" }, { "insertAt": "bottom" })); module.exports = css;
 },{"browserify-css":1}]},{},[13]);

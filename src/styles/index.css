@@ -36,6 +36,7 @@ input:focus {
 }
 
 button {
+  cursor: pointer;
   font-family: "Bitstream Vera Sans Mono", monospace;
   border: 2px solid rgba(21,171,195,1.0);
   border-radius: 5px;
@@ -46,7 +47,7 @@ button {
 }
 
 button:hover {
-  border: 1px solid rgba(36,198,224,1.0);
+  color: black;
   background-color: rgba(36,198,224,1.0);
   box-shadow: 0 0 7px rgba(36,198,224,1.0);
 }

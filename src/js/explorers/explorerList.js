@@ -39,38 +39,49 @@ class ExplorerList {
     }
 
     const { method, url, body } = this.explorerListMap[form.name];
-    const customRequest = {
-      method,
-      url,
-      body: body && formHelpers.serialize(form)
-    };
+    const serializedForm = body && formHelpers.serialize(form);
+    const customRequest = { method, url, body: serializedForm };
 
-    fetchHelpers.fetchQuery(customRequest).then(response => {
-      form.parentElement.parentElement.nextElementSibling.innerHTML = `<p>${JSON.stringify(response)}</p>`;
-    });
+    const explorerCardResult = (
+      form
+        .parentElement
+        .parentElement
+        .nextElementSibling
+    );
+
+    // Execute query and pass relevant body values
+    // & display response from fetch call
+    fetchHelpers.fetchQuery(customRequest)
+      .then(response => explorerCardResult.innerHTML = `<p>${JSON.stringify(response)}</p>`)
+      .catch(err => explorerCarResult.innerHTML = `<p>${JSON.stringify(err)}</p>`);
   }
 
   /**
    * @method main
    */ 
   main() {
-    this.configs && this.configs.forEach((config, index) => {
-      const formName = `${config.title}_${config.url}_${config.method}`;
-      const newExplorer = new ExplorerComponent(
-        config.method,
-        config.title,
-        config.url,
-        config.body
-      );
+    // If we have the explorer json objects from 
+    // batch form/ single form (check out Dashboard)
+    if (this.configs) {
+      this.configs.forEach((config, index) => {
+        const formName = `${config.title}_${config.url}_${config.method}`;
+        const newExplorer = new ExplorerComponent(config.method, config.title, config.url, config.body);
+        
+        // Initialize explorer list map array, to later use
+        // to match selected forms with their relevant config objects
+        this.explorerListMap[formName] = config;
 
-      this.explorerListMap[formName] = config;
-      this.explorerEmptyList.setAttribute('style', 'display: none');
-      this.explorerList.appendChild(newExplorer.getElement());
-    });
+        // Hide "empty list" label
+        this.explorerEmptyList.setAttribute('style', 'display: none');
+        // Add explorer component/card to list
+        this.explorerList.appendChild(newExplorer.getElement());
+      });
+    }
 
+    // Grab all explorer forms (forms in explorer component/ card)
     const explorerForms = document.querySelectorAll('form.Geronimo-explorerForm');
 
-    // Listens for form submissions from Explorer items
+    // Add callback for form submissions
     explorerForms.forEach(form => form.addEventListener("submit", e => this.onFormSubmit(e, form)));
   }
 }

@@ -36,8 +36,7 @@ div.Geronimo-explorerCardResult {
   font-size: 12px;
   word-break: break-all;
   overflow-y: scroll;
-  width: 70%;
-  height: 200px;
+  width: inherit;
   border: 1px solid;
   padding: 20px;
   border-radius: 5px;
