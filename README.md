@@ -6,6 +6,7 @@
 <p align="center">
 Geronimo is built with Vanilla JS and hosted with <a href="https://cloud.google.com/appengine" target="_blank">Google Cloud App Engine</a>
 </p>
+<img src="https://github.com/pattishin/geronimo/blob/master/src/images/geronimo1.png?raw=true" />
 
 ## 💻 Using the app
 
@@ -19,6 +20,9 @@ Geronimo is built with Vanilla JS and hosted with <a href="https://cloud.google.
    ```
 
 2. Add new API Explorer one at a time with the single form  method.
+
+Either method should produce an API Explorer Card.
+<img src="https://github.com/pattishin/geronimo/blob/master/src/images/geronimo2.png?raw=true" />
 
 ## ⚙️  Getting started with development
 
