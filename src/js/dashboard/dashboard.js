@@ -29,18 +29,10 @@ class Dashboard {
 
     this.initForms();
   
-    // For this challenge! (hello!)
-    this.initForChallenge();
-  }
- 
-  /**
-   * Initializing explorer list with required 
-   * config for coding challenge
-   */ 
-  initForChallenge() {
+    // Initializing explorer list 
     this.displayExplorerList(batchConfig2);
   }
-
+ 
   /**
    * @method initForms
    * @description Sets up listeners for batch/ single form submissions
