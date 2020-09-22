@@ -1360,7 +1360,6 @@ class Dashboard {
   constructor() {
     // Binding to maintain "this" reference
     this.initForms = this.initForms.bind(this);
-    this.initForChallenge = this.initForChallenge.bind(this);
     this.displyExplorerList = this.displayExplorerList.bind(this);
 
     // Grab form elements (top forms on page)
@@ -1369,18 +1368,10 @@ class Dashboard {
 
     this.initForms();
   
-    // For this challenge! (hello!)
-    this.initForChallenge();
-  }
- 
-  /**
-   * Initializing explorer list with required 
-   * config for coding challenge
-   */ 
-  initForChallenge() {
+    // Initializing explorer list 
     this.displayExplorerList(batchConfig2);
   }
-
+ 
   /**
    * @method initForms
    * @description Sets up listeners for batch/ single form submissions
@@ -1622,6 +1613,8 @@ class ExplorerList {
       e.stopPropagation();
       e.preventDefault();
     }
+
+    console.log(form.name);
 
     const { method, url, body } = this.explorerListMap[form.name];
     const serializedForm = body && formHelpers.serialize(form);

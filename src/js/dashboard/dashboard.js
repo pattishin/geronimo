@@ -20,7 +20,6 @@ class Dashboard {
   constructor() {
     // Binding to maintain "this" reference
     this.initForms = this.initForms.bind(this);
-    this.initForChallenge = this.initForChallenge.bind(this);
     this.displyExplorerList = this.displayExplorerList.bind(this);
 
     // Grab form elements (top forms on page)
